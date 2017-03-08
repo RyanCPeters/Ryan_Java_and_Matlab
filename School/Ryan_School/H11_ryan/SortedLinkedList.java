@@ -8,45 +8,20 @@ import java.util.NoSuchElementException;
 public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	private int size;
 	private Node tail;
-	private Node root;
+	private Node head;
+
+	private enum HeadOrTail {HEAD, TAIL, MID, CURR, PREV}
+
+	;
 
 	/**
-	 * creates an empty list with a default setting for the root and tail nodes being null.
+	 * creates an empty list with a default setting for the head and tail nodes being null.
 	 */
 	public SortedLinkedList() {
 		size = 0;
-		root = new Node(true);
-		root.next = tail = tail.next = null;
+		head = new Node(HeadOrTail.HEAD);
+		tail = new Node(HeadOrTail.TAIL);
 	}
-
-	/**
-	 * @param head
-	 */
-	public SortedLinkedList(Node head) {
-		this();
-
-		root.next = head;
-		size = 1;
-		if (head.isRoot) {
-			root.next = root.next.next;
-
-		}
-
-		if (root.next.next != null) {
-			size++;
-			tail = root.next.next;
-			while (tail.next != null) {
-				tail = tail.next;
-				if (tail.next == null) {
-
-					break;
-				}
-
-			}
-		}
-
-	}
-
 
 	/**returns the number of elements in the list
 	 *
@@ -72,7 +47,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public E getHead() {
-		return root.next.value;
+		return head.next.value;
 	}
 
 	/**
@@ -81,7 +56,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public E getTail() {
-		return tail.value;
+		return tail.next.value;
 	}
 
 	/**returns the first index position of the node in the sorted list that contains the given value, if
@@ -95,62 +70,129 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		MyIter iter = (MyIter) iterator();
 		while(iter.hasNext()){
 			E target = iter.next();
-			if(target.compareTo(value) == 0)return iter.getPos();
+			if (target.compareTo(value) == 0) return iter.pos;
 		}
 		return -1;
 	}
 
-
+	/**
+	 * @param value
+	 * @return
+	 */
 	@Override
 	public boolean contains(E value) {
-		if (indexOf(value) < 0) {
-			return false;
-		}
+		if (indexOf(value) < 0) return false;
 		return true;
 	}
 
+	/**
+	 *
+	 * @param value
+	 */
 	@Override
 	public void add(E value) {
-		tail = tail.next = new Node(value);
-		tail.next = null;
-		size++;
+		MyIter iter = new MyIter();
+		boolean thereYet = false;
+		E iterVal;
+		if (size > 0) {
 
+			while (iter.hasNext() && !thereYet) {
+				iterVal = (iter.peepNextVal() != null) ? iter.next() : null;
+				if (iter.checkForEndsNear() == HeadOrTail.TAIL) {
+					iter.insert(value);
+					thereYet = true;
+				} else if (iter.checkForEndsFar() == HeadOrTail.TAIL) {
+					thereYet = true;
+				} else if (iterVal != null && iterVal.compareTo(value) > 0) {
+					iter.insert(value);
+					thereYet = true;
+				}
+			}
+
+
+		} else {
+			tail.next = head.next = new Node(value);
+		}
+		size++;
 	}
 
+	/**
+	 *
+	 * @param other
+	 */
 	@Override
 	public void addAll(ISortedList<E> other) {
-		Iterator<E> iter = other.iterator();
-		while(iter.hasNext()){
-			add(iter.next());
+		Iterator<E> otherIter = other.iterator();
+		if (!checkOrdered(other)) {
+
+		}
+		while (otherIter.hasNext()) {
+			add(otherIter.next());
 		}
 	}
 
+	private boolean checkOrdered(ISortedList<E> other) {
+		boolean isOrdered;
+		Iterator otherIter = other.iterator();
+
+		E value1 = otherIter.hasNext() ? (E) otherIter.next() : null;
+		E value2 = otherIter.hasNext() ? (E) otherIter.next() : null;
+
+		isOrdered = value1 != null && ((value2 != null && (value1.compareTo(value2) < 0)) || value2 == null);
+
+		while (otherIter.hasNext() && isOrdered) {
+			value1 = otherIter.hasNext() ? (E) otherIter.next() : null;
+			value2 = otherIter.hasNext() ? (E) otherIter.next() : null;
+
+			if (value1 != null) {
+
+				if ((value2 != null && value1.compareTo(value2) < 0) || value2 == null) isOrdered = true;
+				else return false;
+
+			} else return false;
+		}// close of while loop
+		return true;
+	}// end of checkOrdered method
+
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public E removeHead() {
-		E val = root.next.value;
-		root.next = root.next.next;
+		if (size == 0) return null;
+		E val = head.next.value;
+		head.next = head.next.next;
 		size--;
 		return val;
 	}
 
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public E removeTail() {
-		E val = tail.value;
+		E val = tail.next.value;
 		MyIter iter = (MyIter)iterator();
-		while(iter.hasNext() && iter.getNode().next != tail){
+		while (iter.checkForEndsFar() != HeadOrTail.TAIL){
 			iter.next();
 		}
-		tail = iter.getNode();
-		tail.next = null;
+		tail.next = iter.prev.next;
 		size--;
 		return val;
 	}
 
+	/**
+	 *
+	 * @param value
+	 * @return
+	 */
 	@Override
 	public boolean remove(E value) {
 		MyIter iter = (MyIter)iterator();
-		while(iter.hasNext()){
-			E check = iter.next();
+		while (iter.hasNext()) {
+			E check = iter.peepCurrVal();
 			if(check.compareTo(value) == 0){
 				iter.remove();
 				return true;
@@ -159,9 +201,12 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		return false;
 	}
 
+	/**
+	 *
+	 */
 	@Override
 	public void clear() {
-		root.next = tail = null;
+		head.next = tail = null;
 	}
 
 	/**
@@ -173,22 +218,69 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	public Iterator<E> iterator() {
 		return new MyIter();
 	}
+
+	/** A custom iterator set up for traversing the nodes in a this sorted single linked list class object.
+	 *
+	 */
 	private class MyIter implements Iterator<E> {
 		private int pos;
 		private boolean canRemove;
 		private Node curr;
 		private Node prev;
 
+
+		/**
+		 *
+		 */
 		public MyIter() {
 			this.pos = -1;
 			this.canRemove = false;
-			this.prev = this.curr = root;
+			this.curr = new Node(head, HeadOrTail.CURR);
+			this.prev = new Node(head, HeadOrTail.PREV);
 
 		}
 
+		/**
+		 * reveals the value stored at the node that curr is currently pointing at without advancing current
+		 *
+		 * @return the value stored at the node that curr is currently pointing at
+		 */
+		private E peepCurrVal() {
+			return curr.next.value;
+		}
 
-		protected Node getNode(){return curr;}
-		protected int getPos(){return pos;}
+		private E peepNextVal() {
+			return curr.next.next.value;
+		}
+
+		/**
+		 * This method helps check if the node following the one that curr is pointing at has the TAIL enum flag.
+		 *
+		 * @return the HeadOrTail enum flag assigned to the node following the current target of curr.
+		 */
+		private HeadOrTail checkForEndsFar() {
+			return (curr.next.next != null) ? curr.next.next.myType : HeadOrTail.TAIL;
+		}
+
+		/**
+		 * This method allows the checking of the HeadOrTail enum flag for the current node.
+		 *
+		 * @return the HeadOrTail enum flag assigned to the current target node of curr.
+		 */
+		private HeadOrTail checkForEndsNear() {
+			return curr.next.myType;
+		}
+
+		/**
+		 * A method for inserting a new node directly before the node curr is pointing at. It utilizes the fact that
+		 * the iterator already has a pointer for both current target node and the immediately preceding node.
+		 *
+		 * @param val
+		 */
+		private void insert(E val) {
+			Node n = new Node(val, curr.next.next);
+			prev.next.next = curr.next = n;
+		}
 
 		/**
 		 * Returns true if the iteration has more elements.
@@ -210,12 +302,14 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		 */
 		@Override
 		public E next() throws NoSuchElementException {
-			if (!hasNext()) throw new NoSuchElementException();
-			prev = curr;
-			curr = curr.next;
+			if (!hasNext()) throw new NoSuchElementException("there isn't a next node to reference");
+			if (curr.next.next.value == null)
+				throw new NoSuchElementException("there is a node here, but no data is stored");
+			prev.next = curr.next;
+			curr.next = curr.next.next;
 			pos++;
 			canRemove = true;
-			return curr.value;
+			return curr.next.value;
 		}
 
 		/**
@@ -237,30 +331,65 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		 */
 		@Override
 		public void remove() {
-			if(canRemove){
-				prev.next = curr = curr.next;
+			if (canRemove) {
+				if (pos == 0) head.next = head.next.next;
+				if (curr.next.next.myType == HeadOrTail.TAIL) tail.next = prev.next;
+				prev.next.next = curr.next.next;
+				curr.next = prev.next;
 				canRemove = false;
 				size--;
+			} else {
+				throw new IllegalStateException("\n\t\tthe next() method has not yet been called, \n" +
+						"\t\tor the remove() method has already been called after the last call to the next() method");
 			}
 		}
 	}
 
+	/**
+	 * the single linked nodes that are used to build the sorted list.
+	 */
 	private class Node {
 		E value;
 		Node next;
-		boolean isRoot;
+		HeadOrTail myType = HeadOrTail.MID;
+
+		/** sets the generic value to the given value and the next Node pointer to the given pointer.
+		 *
+		 * @param value a generic comparable object
+		 * @param next a single link list node
+		 */
 		Node(E value, Node next) {
-			isRoot = false;
 			this.value = value;
 			this.next = next;
 		}
-		Node(E value){
+
+		/** sets the generic value to the given value then setns the next Node pointer to be null.
+		 *
+		 * @param value a generic comparable object
+		 */
+		Node(E value) {
 			this(value, null);
 		}
 
-		Node(boolean isRoot) {
-			this(null, null);
-			this.isRoot = isRoot;
+		/**
+		 * Sets both the next Node pointer and the enum HeadOrTail flag to the given parameters then sets the value
+		 * field to be null.
+		 *
+		 * @param next a single link list node
+		 * @param type the enum HeadOrTail flag used to identify the head and tail Nodes in the list.
+		 */
+		Node(Node next, HeadOrTail type) {
+			this(null, next);
+			this.myType = type;
+		}
+
+		/** sets the HeadOrTail enum flag to the given parameter, then sets the generic value field along with the
+		 *  next Node pointer to be null.
+		 *
+		 * @param type the enum HeadOrTail flag used to identify the head and tail Nodes in the list.
+		 */
+		Node(HeadOrTail type) {
+			this(null, type);
 		}
 	}
 }
