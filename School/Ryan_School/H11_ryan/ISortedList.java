@@ -1,4 +1,4 @@
-public interface ISortedList<E> extends Iterable<E>, Comparable<E> {
+public interface ISortedList<E extends Comparable> extends Iterable<E> {
     public int size();
     public boolean isEmpty();
     public E getHead();

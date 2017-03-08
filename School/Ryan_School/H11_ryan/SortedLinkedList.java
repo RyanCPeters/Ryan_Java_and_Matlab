@@ -9,10 +9,13 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	private int size;
 	private Node head;
 	private Node tail;
-
+	private Node root;
 	public SortedLinkedList() {
 		size = 0;
+		root = new Node(true);
 		head = head.next = tail = tail.next = null;
+
+		root.next = head;
 
 	}
 
@@ -96,7 +99,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	@Override
 	public E removeHead() {
 		E val = head.value;
-		head = head.next;
+		root.next = head = head.next;
 		size--;
 		return val;
 	}
@@ -129,50 +132,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 
 	@Override
 	public void clear() {
-		head = tail = null;
-	}
-
-	/**
-	 * Compares this object with the specified object for order.  Returns a
-	 * negative integer, zero, or a positive integer as this object is less
-	 * than, equal to, or greater than the specified object.
-	 * <p>
-	 * <p>The implementor must ensure <tt>sgn(x.compareTo(y)) ==
-	 * -sgn(y.compareTo(x))</tt> for all <tt>x</tt> and <tt>y</tt>.  (This
-	 * implies that <tt>x.compareTo(y)</tt> must throw an exception iff
-	 * <tt>y.compareTo(x)</tt> throws an exception.)
-	 * <p>
-	 * <p>The implementor must also ensure that the relation is transitive:
-	 * <tt>(x.compareTo(y)&gt;0 &amp;&amp; y.compareTo(z)&gt;0)</tt> implies
-	 * <tt>x.compareTo(z)&gt;0</tt>.
-	 * <p>
-	 * <p>Finally, the implementor must ensure that <tt>x.compareTo(y)==0</tt>
-	 * implies that <tt>sgn(x.compareTo(z)) == sgn(y.compareTo(z))</tt>, for
-	 * all <tt>z</tt>.
-	 * <p>
-	 * <p>It is strongly recommended, but <i>not</i> strictly required that
-	 * <tt>(x.compareTo(y)==0) == (x.equals(y))</tt>.  Generally speaking, any
-	 * class that implements the <tt>Comparable</tt> interface and violates
-	 * this condition should clearly indicate this fact.  The recommended
-	 * language is "Note: this class has a natural ordering that is
-	 * inconsistent with equals."
-	 * <p>
-	 * <p>In the foregoing description, the notation
-	 * <tt>sgn(</tt><i>expression</i><tt>)</tt> designates the mathematical
-	 * <i>signum</i> function, which is defined to return one of <tt>-1</tt>,
-	 * <tt>0</tt>, or <tt>1</tt> according to whether the value of
-	 * <i>expression</i> is negative, zero or positive.
-	 *
-	 * @param o the object to be compared.
-	 * @return a negative integer, zero, or a positive integer as this object
-	 * is less than, equal to, or greater than the specified object.
-	 * @throws NullPointerException if the specified object is null
-	 * @throws ClassCastException   if the specified object's type prevents it
-	 *                              from being compared to this object.
-	 */
-	@Override
-	public int compareTo(E o) {
-		return 0;
+		root.next = head = head.next = tail = tail.next = null;
 	}
 
 	/**
@@ -191,9 +151,9 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		private Node prev;
 
 		public MyIter() {
-			this.pos = 0;
+			this.pos = -1;
 			this.canRemove = false;
-			this.prev = this.curr = head;
+			this.prev = this.curr = root;
 
 		}
 
@@ -222,7 +182,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		@Override
 		public E next() throws NoSuchElementException{
 			if(curr == null)return null;
-			if(pos > 0) {
+			if(!curr.isRoot) {
 				prev = curr;
 				curr = curr.next;
 			}
@@ -258,15 +218,21 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		}
 	}
 
-		private class Node {
+	private class Node {
 		E value;
 		Node next;
+		boolean isRoot;
 		Node(E value, Node next){
 			this.value = value;
 			this.next = next;
 		}
 		Node(E value){
 			this(value, null);
+		}
+
+		Node(boolean isRoot) {
+			this(null, null);
+			this.isRoot = isRoot;
 		}
 	}
 }
