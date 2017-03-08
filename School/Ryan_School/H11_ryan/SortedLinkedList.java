@@ -7,17 +7,46 @@ import java.util.NoSuchElementException;
  */
 public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	private int size;
-	private Node head;
 	private Node tail;
 	private Node root;
+
+	/**
+	 * creates an empty list with a default setting for the root and tail nodes being null.
+	 */
 	public SortedLinkedList() {
 		size = 0;
 		root = new Node(true);
-		head = head.next = tail = tail.next = null;
+		root.next = tail = tail.next = null;
+	}
+
+	/**
+	 * @param head
+	 */
+	public SortedLinkedList(Node head) {
+		this();
 
 		root.next = head;
+		size = 1;
+		if (head.isRoot) {
+			root.next = root.next.next;
+
+		}
+
+		if (root.next.next != null) {
+			size++;
+			tail = root.next.next;
+			while (tail.next != null) {
+				tail = tail.next;
+				if (tail.next == null) {
+
+					break;
+				}
+
+			}
+		}
 
 	}
+
 
 	/**returns the number of elements in the list
 	 *
@@ -43,7 +72,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public E getHead() {
-		return head.value;
+		return root.next.value;
 	}
 
 	/**
@@ -98,8 +127,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 
 	@Override
 	public E removeHead() {
-		E val = head.value;
-		root.next = head = head.next;
+		E val = root.next.value;
+		root.next = root.next.next;
 		size--;
 		return val;
 	}
@@ -132,7 +161,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 
 	@Override
 	public void clear() {
-		root.next = head = head.next = tail = tail.next = null;
+		root.next = tail = null;
 	}
 
 	/**
@@ -180,14 +209,12 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		 * @throws NoSuchElementException if the iteration has no more elements
 		 */
 		@Override
-		public E next() throws NoSuchElementException{
-			if(curr == null)return null;
-			if(!curr.isRoot) {
-				prev = curr;
-				curr = curr.next;
-			}
+		public E next() throws NoSuchElementException {
+			if (!hasNext()) throw new NoSuchElementException();
+			prev = curr;
+			curr = curr.next;
 			pos++;
-
+			canRemove = true;
 			return curr.value;
 		}
 
@@ -222,7 +249,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		E value;
 		Node next;
 		boolean isRoot;
-		Node(E value, Node next){
+		Node(E value, Node next) {
+			isRoot = false;
 			this.value = value;
 			this.next = next;
 		}
