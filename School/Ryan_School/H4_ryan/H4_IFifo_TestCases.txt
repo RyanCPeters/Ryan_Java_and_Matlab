@@ -1,0 +1,124 @@
+Expected outputs:
+
+Case#4
+ ERROR: Sorry, there is no room in the IntQ!
+
+Case#6 
+   inserted 3 elements: 
+   [2001, 2002, 2003]
+   first  delete: 2001
+   add 99 ...
+   [2002, 2003, 99]
+
+   deleting all remain ... 
+   []
+
+Case#8 circular
+   inserted 3 elements: 
+   [2001, 2002, 2003]
+
+   first  delete: 2001
+   second delete: 2002
+   add 2004 ... 
+   [2003, 2004]
+   third  delete: 2003
+   fourth delete: 2004
+   []
+
+
+
+///////////////////////////////////////////////////////
+//   TEST DRIVER:
+///////////////////////////////////////////////////////
+
+import java.util.*;
+
+public class H4_Test {
+   public static void main(String[] args) {
+      try { //Case1: test defacult constructor
+         IntQ iq = new IntQ();
+         System.out.println("Case#1:\n capacity = " + iq.getCapacity() +
+                            " ; length = " + iq.getLength());
+      } catch(Exception e) {
+         System.out.println("Case#1\n crashed: " + e.toString());
+      }
+      try { //Case2: test non-defacult constructor
+         IntQ iq = new IntQ(5);
+         System.out.println("Case#2:\n capacity = " + iq.getCapacity() +
+                            " ; length = " + iq.getLength());
+      } catch(Exception e) {
+         System.out.println("Case#2\n crashed: " + e.toString());
+      }
+      try { //Case3: test insert
+         IntQ iq = new IntQ(5);
+         iq.insert(2001); iq.insert(2002); iq.insert(2003);
+         System.out.println("Case#3:\n" + iq.toString() +
+                            "\nlength = " + iq.getLength());
+      } catch(Exception e) {
+         System.out.println("Case#3\n crashed: " + e.toString());
+      }
+      try { //Case4: test insert with overflow
+         IntQ iq = new IntQ(5);
+         for (int i = 0; i <= 6; i++) 
+            iq.insert(2001 + i);
+         System.out.println("Case#4 overflow: " + iq.toString() +
+                            " ; length = " + iq.getLength());
+      } catch(Exception e) {
+         System.out.println("Case#4\n crashed: " + e.toString());
+      }
+      try { //Case5: test insert and delete
+         System.out.println("Case#5 ");
+         IntQ iq = new IntQ(5);
+         iq.insert(2001); iq.insert(2002); iq.insert(2003);
+         System.out.println("   inserted 3 elements: \n" + iq.toString());
+         System.out.println("   first  delete: " + iq.delete());
+         System.out.println("   second delete: " + iq.delete());
+         System.out.println(iq.toString());       
+      } catch(Exception e) {
+         System.out.println("Case#5\n crashed: " + e.toString());
+      }
+      try { //Case6: test delete all
+         System.out.println("Case#6 ");
+         IntQ iq = new IntQ(5);
+         iq.insert(2001); iq.insert(2002); iq.insert(2003);
+         System.out.println("   inserted 3 elements: \n" + iq.toString());
+         System.out.println("   first  delete: " + iq.delete());
+         System.out.println("   add 99 ...");
+         iq.insert(99);
+         System.out.println(iq.toString());       
+         System.out.println("   deleting all remain ... ");
+         while (!iq.isEmpty()) 
+            System.out.print(" " + iq.delete() + " ");
+         System.out.println("\n" + iq.toString());       
+      } catch(Exception e) {
+         System.out.println("Case#6\n crashed: " + e.toString());
+      }
+      try { //Case7: test setCapacity
+         IntQ iq = new IntQ(5);
+         iq.insert(2001); iq.insert(2002); iq.insert(2003);
+         iq.setCapacity(10);
+         System.out.println("Case#7: expand to 10\n capacity = " + iq.getCapacity() +
+                            " ; length = " + iq.getLength() +
+                            " ; intQ = " + iq.toString());
+      } catch(Exception e) {
+         System.out.println("Case#7\n crashed: " + e.toString());
+      }
+      try { //Case8: circular insertion
+         System.out.println("Case#8 circular");
+         IntQ iq = new IntQ(3);
+         iq.insert(2001); iq.insert(2002); iq.insert(2003);
+         System.out.println("   inserted 3 elements: \n" + iq.toString());
+         System.out.println("   first  delete: " + iq.delete());
+         System.out.println("   second delete: " + iq.delete());
+         System.out.println("add 2004 ... ");
+         iq.insert(2004);
+         System.out.println(iq.toString());
+         System.out.println("   third  delete: " + iq.delete());
+         System.out.println("   fourth delete: " + iq.delete());
+         System.out.println(iq.toString());
+      } catch(Exception e) {
+         System.out.println("Case#7\n crashed: " + e.toString());
+      }
+
+   }
+}
