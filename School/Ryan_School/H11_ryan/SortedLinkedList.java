@@ -12,7 +12,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 
 	private enum HeadOrTail {HEAD, TAIL, MID, CURR, PREV}
 
-	;
+
 
 	/**
 	 * creates an empty list with a default setting for the head and tail nodes being null.
@@ -95,20 +95,23 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		boolean thereYet = false;
 		E iterVal;
 		if (size > 0) {
-
+			boolean preInsert = true; // true for pre-insert(default behavior of my insert method), false for post-insert
 			while (iter.hasNext() && !thereYet) {
 				iterVal = (iter.peepNextVal() != null) ? iter.next() : null;
-				if (iter.checkForEndsNear() == HeadOrTail.TAIL) {
-					iter.insert(value);
+				if (iterVal != null && iterVal.compareTo(value) < 0) {
+					preInsert = true;
 					thereYet = true;
-				} else if (iter.checkForEndsFar() == HeadOrTail.TAIL) {
+				} else if (iterVal == null) {
 					thereYet = true;
-				} else if (iterVal != null && iterVal.compareTo(value) > 0) {
-					iter.insert(value);
-					thereYet = true;
+					preInsert = false;
 				}
 			}
+			if (!preInsert) {
+				if (iter.checkForEndsNear() == HeadOrTail.HEAD) {
 
+				}
+			}
+			iter.getPrevPointer()
 
 		} else {
 			tail.next = head.next = new Node(value);
@@ -131,6 +134,10 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		}
 	}
 
+	/**
+	 * @param other
+	 * @return
+	 */
 	private boolean checkOrdered(ISortedList<E> other) {
 		boolean isOrdered;
 		Iterator otherIter = other.iterator();
@@ -271,16 +278,24 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 			return curr.next.myType;
 		}
 
-		/**
-		 * A method for inserting a new node directly before the node curr is pointing at. It utilizes the fact that
-		 * the iterator already has a pointer for both current target node and the immediately preceding node.
-		 *
-		 * @param val
-		 */
-		private void insert(E val) {
-			Node n = new Node(val, curr.next.next);
-			prev.next.next = curr.next = n;
+		private Node getCurrPointer() {
+			return curr.next;
 		}
+
+		private Node getPrevPointer() {
+			return prev.next;
+		}
+//
+//		/**
+//		 * A method for inserting a new node directly before the node curr is pointing at. It utilizes the fact that
+//		 * the iterator already has a pointer for both current target node and the immediately preceding node.
+//		 *
+//		 * @param val
+//		 */
+//		private void insert(E val) {
+//			Node n = new Node(val, curr.next);
+//			prev.next.next = curr.next = n;
+//		}
 
 		/**
 		 * Returns true if the iteration has more elements.
