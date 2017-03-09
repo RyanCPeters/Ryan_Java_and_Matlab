@@ -1,7 +1,8 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-/**
+/**A single link list of nodes that store generic data objects. Those data objects must be of class types that implement
+ * the Comparable Interface.
  * @author Ryan Peters
  * @date 3/5/2017
  */
@@ -18,9 +19,9 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 * creates an empty list with a default setting for the head and tail nodes being null.
 	 */
 	public SortedLinkedList() {
-		size = 0;
-		head = new Node(HeadOrTail.HEAD);
-		tail = new Node(HeadOrTail.TAIL);
+		this.size = 0;
+		this.head = new Node(HeadOrTail.HEAD);
+		this.tail = new Node(HeadOrTail.TAIL);
 	}
 
 	/**returns the number of elements in the list
@@ -41,12 +42,14 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		return size == 0;
 	}
 
+
 	/**returns the first element in the list without removing that element from the list.
 	 *
 	 * @return the first element in the list.
 	 */
 	@Override
 	public E getHead() {
+		if (head.next == null) throw new IllegalStateException("head.next == null");
 		return head.next.value;
 	}
 
@@ -56,6 +59,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public E getTail() {
+		if (tail.next == null) throw new IllegalStateException("tail.next == null");
 		return tail.next.value;
 	}
 
@@ -91,31 +95,47 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public void add(E value) {
-		MyIter iter = new MyIter();
-		boolean thereYet = false;
-		E iterVal;
+		// this add method is used for data that needs to be meshed inside of the existing set
 		if (size > 0) {
-			boolean preInsert = true; // true for pre-insert(default behavior of my insert method), false for post-insert
+			MyIter iter = new MyIter();
+			boolean thereYet = false;
+
+			boolean preInsert = false;
+			/* true for pre-insert(default behavior of my insert method), false for
+			* post-insert; pre and post insertion should be thought of in relation to
+			* the position of the data given to the iterVal variable.*/
 			while (iter.hasNext() && !thereYet) {
-				iterVal = (iter.peepNextVal() != null) ? iter.next() : null;
-				if (iterVal != null && iterVal.compareTo(value) < 0) {
-					preInsert = true;
+				E iterVal = iter.next();
+				if (iterVal == null) {
 					thereYet = true;
-				} else if (iterVal == null) {
+				} else if (iter.getCurrPointer().myType == HeadOrTail.TAIL) {
 					thereYet = true;
-					preInsert = false;
+				} else if (iterVal != null) {
+					if (iterVal.compareTo(value) >= 0) {
+						preInsert = true;
+						thereYet = true;
+					}
 				}
 			}
-			if (!preInsert) {
-				if (iter.checkForEndsNear() == HeadOrTail.HEAD) {
-
-				}
+			if (preInsert) {
+				iter.insertAnterior(value);
+			} else {
+				iter.insertPosterior(value);
 			}
-			iter.getPrevPointer()
-
 		} else {
-			tail.next = head.next = new Node(value);
+			// this represents the initial non head/tail node to be added to the list
+			head.next = tail.next = new Node(value);
 		}
+		size++;
+	}
+
+	private void addPosterior(E val) {
+		tail.next = tail.next.next = new Node(val);
+		size++;
+	}
+
+	private void addAnterior(E val) {
+		head.next = new Node(val, head.next);
 		size++;
 	}
 
@@ -125,41 +145,11 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public void addAll(ISortedList<E> other) {
-		Iterator<E> otherIter = other.iterator();
-		if (!checkOrdered(other)) {
+		if (other.getHead().compareTo(this.getTail()) > 0) for (E elem : other) addPosterior(elem);
+		else if (head.next.value.compareTo(other.getTail()) > 0) for (E elem : other) addAnterior(elem);
+		else for (E elem : other) add(elem);
 
-		}
-		while (otherIter.hasNext()) {
-			add(otherIter.next());
-		}
 	}
-
-	/**
-	 * @param other
-	 * @return
-	 */
-	private boolean checkOrdered(ISortedList<E> other) {
-		boolean isOrdered;
-		Iterator otherIter = other.iterator();
-
-		E value1 = otherIter.hasNext() ? (E) otherIter.next() : null;
-		E value2 = otherIter.hasNext() ? (E) otherIter.next() : null;
-
-		isOrdered = value1 != null && ((value2 != null && (value1.compareTo(value2) < 0)) || value2 == null);
-
-		while (otherIter.hasNext() && isOrdered) {
-			value1 = otherIter.hasNext() ? (E) otherIter.next() : null;
-			value2 = otherIter.hasNext() ? (E) otherIter.next() : null;
-
-			if (value1 != null) {
-
-				if ((value2 != null && value1.compareTo(value2) < 0) || value2 == null) isOrdered = true;
-				else return false;
-
-			} else return false;
-		}// close of while loop
-		return true;
-	}// end of checkOrdered method
 
 	/**
 	 *
@@ -167,7 +157,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public E removeHead() {
-		if (size == 0) return null;
+		if (size == 0 || head.next == null) return null;
 		E val = head.next.value;
 		head.next = head.next.next;
 		size--;
@@ -180,9 +170,10 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public E removeTail() {
+		if (tail.next == null) return null;
 		E val = tail.next.value;
 		MyIter iter = (MyIter)iterator();
-		while (iter.checkForEndsFar() != HeadOrTail.TAIL){
+		while (iter.hasNext()) {
 			iter.next();
 		}
 		tail.next = iter.prev.next;
@@ -199,8 +190,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	public boolean remove(E value) {
 		MyIter iter = (MyIter)iterator();
 		while (iter.hasNext()) {
-			E check = iter.peepCurrVal();
-			if(check.compareTo(value) == 0){
+
+			if (iter.next().compareTo(value) == 0) {
 				iter.remove();
 				return true;
 			}
@@ -226,6 +217,39 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		return new MyIter();
 	}
 
+	/**
+	 * Returns a string representation of the object. In general, the
+	 * {@code toString} method returns a string that
+	 * "textually represents" this object. The result should
+	 * be a concise but informative representation that is easy for a
+	 * person to read.
+	 * It is recommended that all subclasses override this method.
+	 * <p>
+	 * The {@code toString} method for class {@code Object}
+	 * returns a string consisting of the name of the class of which the
+	 * object is an instance, the at-sign character `{@code @}', and
+	 * the unsigned hexadecimal representation of the hash code of the
+	 * object. In other words, this method returns a string equal to the
+	 * value of:
+	 * <blockquote>
+	 * <pre>
+	 * getClass().getName() + '@' + Integer.toHexString(hashCode())
+	 * </pre></blockquote>
+	 *
+	 * @return a string representation of the object.
+	 */
+	@Override
+	public String toString() {
+		Iterator iter = new MyIter();
+		StringBuilder sb = new StringBuilder("{ ");
+		if (iter.hasNext()) sb.append(removeHead());
+		while (iter.hasNext()) {
+			sb.append(", " + iter.next());
+		}
+		sb.append(" }");
+		return sb.toString();
+	}
+
 	/** A custom iterator set up for traversing the nodes in a this sorted single linked list class object.
 	 *
 	 */
@@ -247,55 +271,32 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 
 		}
 
-		/**
-		 * reveals the value stored at the node that curr is currently pointing at without advancing current
-		 *
-		 * @return the value stored at the node that curr is currently pointing at
-		 */
-		private E peepCurrVal() {
-			return curr.next.value;
-		}
-
-		private E peepNextVal() {
-			return curr.next.next.value;
-		}
-
-		/**
-		 * This method helps check if the node following the one that curr is pointing at has the TAIL enum flag.
-		 *
-		 * @return the HeadOrTail enum flag assigned to the node following the current target of curr.
-		 */
-		private HeadOrTail checkForEndsFar() {
-			return (curr.next.next != null) ? curr.next.next.myType : HeadOrTail.TAIL;
-		}
-
-		/**
-		 * This method allows the checking of the HeadOrTail enum flag for the current node.
-		 *
-		 * @return the HeadOrTail enum flag assigned to the current target node of curr.
-		 */
-		private HeadOrTail checkForEndsNear() {
-			return curr.next.myType;
-		}
-
 		private Node getCurrPointer() {
 			return curr.next;
 		}
 
-		private Node getPrevPointer() {
-			return prev.next;
+		/**
+		 * A method for inserting a new node directly before the node curr is pointing at. It utilizes the fact that
+		 * the iterator already has a pointer for both current target node and the immediately preceding node.
+		 *
+		 * @param val
+		 */
+		private void insertAnterior(E val) {
+			curr.next = prev.next.next = new Node(val, curr.next);
 		}
-//
-//		/**
-//		 * A method for inserting a new node directly before the node curr is pointing at. It utilizes the fact that
-//		 * the iterator already has a pointer for both current target node and the immediately preceding node.
-//		 *
-//		 * @param val
-//		 */
-//		private void insert(E val) {
-//			Node n = new Node(val, curr.next);
-//			prev.next.next = curr.next = n;
-//		}
+
+		/**
+		 * A method for inserting a new node directly after the node curr is currently pointing at.
+		 *
+		 * @param val
+		 */
+		private void insertPosterior(E val) {
+			if (curr.next.myType == HeadOrTail.TAIL) {
+				tail.next = prev.next.next = new Node(val, tail);
+			}else{
+				curr.next.next = new Node(val,curr.next.next);
+			}
+		}
 
 		/**
 		 * Returns true if the iteration has more elements.
@@ -317,9 +318,17 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		 */
 		@Override
 		public E next() throws NoSuchElementException {
-			if (!hasNext()) throw new NoSuchElementException("there isn't a next node to reference");
-			if (curr.next.next.value == null)
+			if (!hasNext()) {
+				throw new NoSuchElementException("there isn't a next node to reference");
+			}
+			if(curr.next.next != null && curr.next.next.value == null) {
 				throw new NoSuchElementException("there is a node here, but no data is stored");
+
+			}else if(curr.next.next == null){
+				return null;
+			}
+
+
 			prev.next = curr.next;
 			curr.next = curr.next.next;
 			pos++;
@@ -347,10 +356,13 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		@Override
 		public void remove() {
 			if (canRemove) {
-				if (pos == 0) head.next = head.next.next;
-				if (curr.next.next.myType == HeadOrTail.TAIL) tail.next = prev.next;
-				prev.next.next = curr.next.next;
-				curr.next = prev.next;
+				if (pos == 0) {
+					head.next = head.next.next;
+				} else if (curr.next.next == null || curr.next.next.myType == HeadOrTail.TAIL) {
+					curr.next = prev.next.next = tail.next;
+				} else {
+					curr.next = prev.next.next = curr.next.next;
+				}
 				canRemove = false;
 				size--;
 			} else {
