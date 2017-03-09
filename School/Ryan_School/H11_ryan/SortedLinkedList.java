@@ -10,7 +10,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	private int size;
 	private Node tail;
 	private Node head;
-
+	private Node anteriorAddHead;
+	private Node anteriorAddTail;
 	private enum HeadOrTail {HEAD, TAIL, MID, CURR, PREV}
 
 
@@ -59,8 +60,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public E getTail() {
-		if (tail.next == null) throw new IllegalStateException("tail.next == null");
-		return tail.next.value;
+		if (tail == null) throw new IllegalStateException("tail == null");
+		return tail.value;
 	}
 
 	/**returns the first index position of the node in the sorted list that contains the given value, if
@@ -106,36 +107,42 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 			* the position of the data given to the iterVal variable.*/
 			while (iter.hasNext() && !thereYet) {
 				E iterVal = iter.next();
-				if (iterVal == null) {
+				if (iterVal != null && iterVal.compareTo(value) >= 0) {
+					iter.getCurrPointer().next = new Node(value, iter.getCurrPointer());
 					thereYet = true;
-				} else if (iter.getCurrPointer().myType == HeadOrTail.TAIL) {
+				} else if (iter.getCurrPointer() == tail) {
+					tail = iter.getCurrPointer().next = new Node(value);
 					thereYet = true;
-				} else if (iterVal != null) {
-					if (iterVal.compareTo(value) >= 0) {
-						preInsert = true;
-						thereYet = true;
-					}
 				}
-			}
-			if (preInsert) {
-				iter.insertAnterior(value);
-			} else {
-				iter.insertPosterior(value);
 			}
 		} else {
 			// this represents the initial non head/tail node to be added to the list
-			head.next = tail.next = new Node(value);
+			head.next = tail = new Node(value, tail.next);
 		}
 		size++;
 	}
 
-	private void addPosterior(E val) {
-		tail.next = tail.next.next = new Node(val);
+	/**
+	 * As the name implies, this method adds new elements to the back end of the current collection of data.
+	 * This is a private method, and as such it is used under the assumption that the new data set being
+	 * added contains only data that is larger than that of the current set.
+	 *
+	 * @param val a single element from the external data set.
+	 */
+	private void append(E val) {
+		tail = new Node(val, tail.next);
 		size++;
 	}
 
-	private void addAnterior(E val) {
-		head.next = new Node(val, head.next);
+	/**
+	 * as with the append, the name of this method emplies its use. This method adds data on to the front of the
+	 * current set under the assumption the external data has been vetted to only contain elements smaller than any
+	 * contained in this set.
+	 *
+	 * @param val a single element from the external data set
+	 */
+	private void prepend(E val) {
+		anteriorAddTail.next = new Node(val, anteriorAddTail.next);
 		size++;
 	}
 
@@ -145,10 +152,24 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public void addAll(ISortedList<E> other) {
-		if (other.getHead().compareTo(this.getTail()) > 0) for (E elem : other) addPosterior(elem);
-		else if (head.next.value.compareTo(other.getTail()) > 0) for (E elem : other) addAnterior(elem);
-		else for (E elem : other) add(elem);
-
+		if (other.getHead().compareTo(this.getTail()) > 0) {
+			for (E elem : other) append(elem);
+		} else if (head.next.value.compareTo(other.getTail()) > 0) {
+			anteriorAddHead = new Node(null, HeadOrTail.HEAD);
+			for (E elem : other) {
+				if (anteriorAddHead.next == null) {
+					anteriorAddHead.next = anteriorAddTail = new Node(elem);
+					size++;
+				} else {
+					prepend(elem);
+				}
+			}
+			anteriorAddTail.next = head.next;
+			head.next = anteriorAddHead.next;
+			anteriorAddHead = anteriorAddTail = null;
+		}else {
+			for (E elem : other) add(elem);
+		}
 	}
 
 	/**
@@ -242,13 +263,14 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	@Override
 	public String toString() {
 		Iterator iter = new MyIter();
-		StringBuilder sb = new StringBuilder("{ ");
-		if (iter.hasNext()) sb.append(iter.next());
+		String s = "{ ";
+		if (iter.hasNext()) s += iter.next();
 		while (iter.hasNext()) {
-			sb.append(", " + iter.next());
+			s += ", "+iter.next();
+
 		}
-		sb.append(" }");
-		return sb.toString();
+		s += " }";
+		return s;
 	}
 
 	/** A custom iterator set up for traversing the nodes in a this sorted single linked list class object.
@@ -272,32 +294,14 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 
 		}
 
+		private Node getPrevPointer(){
+			return prev.next;
+		}
+
 		private Node getCurrPointer() {
 			return curr.next;
 		}
 
-		/**
-		 * A method for inserting a new node directly before the node curr is pointing at. It utilizes the fact that
-		 * the iterator already has a pointer for both current target node and the immediately preceding node.
-		 *
-		 * @param val
-		 */
-		private void insertAnterior(E val) {
-			curr.next = prev.next.next = new Node(val, curr.next);
-		}
-
-		/**
-		 * A method for inserting a new node directly after the node curr is currently pointing at.
-		 *
-		 * @param val
-		 */
-		private void insertPosterior(E val) {
-			if (curr.next.myType == HeadOrTail.TAIL) {
-				tail.next = prev.next.next = new Node(val, tail);
-			}else{
-				curr.next.next = new Node(val,curr.next.next);
-			}
-		}
 
 		/**
 		 * Returns true if the iteration has more elements.
