@@ -108,10 +108,10 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 			while (iter.hasNext() && !thereYet) {
 				E iterVal = iter.next();
 				if (iterVal != null && iterVal.compareTo(value) >= 0) {
-					iter.getCurrPointer().next = new Node(value, iter.getCurrPointer());
+					iter.prependInsertion(value);
 					thereYet = true;
-				} else if (iter.getCurrPointer() == tail) {
-					tail = iter.getCurrPointer().next = new Node(value);
+				} else if (iter.getCurrPointer() == tail || iter.getCurrPointer().next == null) {
+					iter.postpendInsertion(value);
 					thereYet = true;
 				}
 			}
@@ -130,7 +130,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 * @param val a single element from the external data set.
 	 */
 	private void append(E val) {
-		tail = new Node(val, tail.next);
+		tail = tail.next = new Node(val);
 		size++;
 	}
 
@@ -142,7 +142,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 * @param val a single element from the external data set
 	 */
 	private void prepend(E val) {
-		anteriorAddTail.next = new Node(val, anteriorAddTail.next);
+		anteriorAddTail = anteriorAddTail.next = new Node(val);
 		size++;
 	}
 
@@ -153,22 +153,40 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	@Override
 	public void addAll(ISortedList<E> other) {
 		if (other.getHead().compareTo(this.getTail()) > 0) {
-			for (E elem : other) append(elem);
+//			System.out.println("reached an append state for addAll");
+			for (E elem : other) {
+//				System.out.println(this);
+				append(elem);
+//				System.out.println(this);
+			}
+//			System.out.println("post append condition");
 		} else if (head.next.value.compareTo(other.getTail()) > 0) {
+//			System.out.println("reached a prependInsertion state for addAll\n");
 			anteriorAddHead = new Node(null, HeadOrTail.HEAD);
 			for (E elem : other) {
+//				System.out.println(elem);
+//				System.out.println(this);
 				if (anteriorAddHead.next == null) {
+
 					anteriorAddHead.next = anteriorAddTail = new Node(elem);
 					size++;
 				} else {
+//					System.out.println("about to prependInsertion :D");
 					prepend(elem);
 				}
+//				System.out.println(this);
 			}
+//			System.out.println("post prependInsertion condition\n");
 			anteriorAddTail.next = head.next;
 			head.next = anteriorAddHead.next;
 			anteriorAddHead = anteriorAddTail = null;
 		}else {
-			for (E elem : other) add(elem);
+//			System.out.println("entered an insertion add state for addAll");
+			for (E elem : other) {
+//				System.out.println(elem);
+				add(elem);
+			}
+//			System.out.println("post insertaion add condition");
 		}
 	}
 
@@ -298,6 +316,22 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 			return prev.next;
 		}
 
+		private void prependInsertion(E value) {
+			prev.next.next = new Node(value, curr.next);
+			pos++;
+		}
+
+		private void postpendInsertion(E value) {
+			if (curr.next == tail) {
+				tail = tail.next = new Node(value);
+			} else if (curr.next.next == null) {
+				curr.next.next = tail = new Node(value);
+			} else {
+				curr.next.next = new Node(value, curr.next.next);
+			}
+
+		}
+
 		private Node getCurrPointer() {
 			return curr.next;
 		}
@@ -375,6 +409,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 						"\t\tor the remove() method has already been called after the last call to the next() method");
 			}
 		}
+
+
 	}
 
 	/**
