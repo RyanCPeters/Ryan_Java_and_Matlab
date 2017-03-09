@@ -204,7 +204,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public void clear() {
-		head.next = tail = null;
+		head.next = tail.next = null;
+		size = 0;
 	}
 
 	/**
@@ -242,7 +243,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	public String toString() {
 		Iterator iter = new MyIter();
 		StringBuilder sb = new StringBuilder("{ ");
-		if (iter.hasNext()) sb.append(removeHead());
+		if (iter.hasNext()) sb.append(iter.next());
 		while (iter.hasNext()) {
 			sb.append(", " + iter.next());
 		}
@@ -307,7 +308,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		 */
 		@Override
 		public boolean hasNext() {
-			return pos+1 < size;
+			return pos + 1 < size && head.next != null;
 		}
 
 		/**
