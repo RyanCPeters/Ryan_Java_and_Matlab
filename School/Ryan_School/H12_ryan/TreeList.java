@@ -1,5 +1,6 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.Stack;
 
 /**
  * @author Ryan Peters
@@ -18,7 +19,20 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	private NavigationFlags shouldHide = NavigationFlags.IDLE;
 	private NavigationFlags shouldDestroy = NavigationFlags.IDLE;
 
+	public TreeList() {
+		this(null, null, 0);
 
+	}
+
+	protected TreeList(BinaryTreeNode root, int size) {
+		this(root, null, size);
+	}
+
+	private TreeList(BinaryTreeNode root, BinaryTreeNode targetableNode, int size) {
+		this.size = size;
+		this.targetableNode = targetableNode;
+		this.root = root;
+	}
 
 	@Override
 	public int size() {
@@ -30,11 +44,35 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		return size == 0;
 	}
 
+	/**
+	 * starting at the root node, traverses left until it finds a node with a null value for .left; This method
+	 * also sets the tree's targetableNode field to be equal to that node allowing peripheral functionality to be
+	 * easily executed on that node.
+	 *
+	 * @return the lowest data value of type E in the tree.
+	 */
 	@Override
 	public E getHead() {
-		return root.data;
+		targetableNode = headHunter(root);
+		return targetableNode.data;
 	}
 
+	/**
+	 * This method takes a node, and then traverses left until it finda a node where .left is null; it then returns
+	 * this last non null node.
+	 *
+	 * @param node any arbitrary node in the tree
+	 * @return the first node in the given node's left side subtree to have a null value for .left;
+	 */
+	private BinaryTreeNode headHunter(BinaryTreeNode node) {
+		while (node.left != null) node = node.left;
+		return node;
+	}
+
+	/**
+	 *
+	 * @return
+	 */
 	@Override
 	public E getTail() {
 		return tailChaser(root).data;
@@ -44,6 +82,10 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		return (node.right != null) ? tailChaser(node.right) : node;
 	}
 
+
+	/**
+	 *
+	 */
 	@Override
 	public int indexOf(E value) {
 		shouldSeek = NavigationFlags.SEEK;
@@ -69,27 +111,37 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 			pos++;
 			if (shouldSeek == NavigationFlags.SEEK && node.data.compareTo(value) == 0) {
 				shouldSeek = NavigationFlags.FOUND;
-				if (shouldDestroy == NavigationFlags.DESTROY) {
-					targetableNode = node;
-					shouldDestroy = NavigationFlags.DESTROYED;
-				}
+
 			}
 			if (shouldSeek == NavigationFlags.SEEK && node.right != null) {
 				pos = seeker(value, node.right, pos);
 			}
 		}
+		if (shouldSeek == NavigationFlags.SEEK && shouldDestroy == NavigationFlags.DESTROY) {
+			targetableNode = node;
+			if (node.left != null) shiftAndDestroyTail(node.left);
+			else if (node.right != null) node.right.parent = node.parent;
 
+			shouldDestroy = NavigationFlags.DESTROYED;
+		}
 		return pos;
 	}
 
+	/** this method does the dirty work of finding where in the tree a node should be added. In essence, this method
+	 * is hiding the value in the tree, but according to an in-order traversal logic.
+	 *
+	 * @param value the data value to be stored once the propper spot is found
+	 * @param node the value parameter will be compared against the data in this node and a decision will be made from
+	 *             there about what direction to proceed in.
+	 */
 	private void hideLikeNinja(E value, BinaryTreeNode node) {
 		if (node != null) {
 			if (shouldHide == NavigationFlags.HIDENODE) {
 				if (node.data.compareTo(value) > 0 && node.left == null) {
-					node.left = new BinaryTreeNode(value);
+					node.left = new BinaryTreeNode(value, node);
 					shouldHide = NavigationFlags.NODEHIDDEN;
 				} else if (node.data.compareTo(value) <= 0 && node.right == null) {
-					node.right = new BinaryTreeNode(value);
+					node.right = new BinaryTreeNode(value, node);
 					shouldHide = NavigationFlags.NODEHIDDEN;
 				} else hideLikeNinja(value, (node.data.compareTo(value) <= 0) ? node.left : node.right);
 
@@ -120,48 +172,54 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 
 	@Override
 	public E removeHead() {
-		E data = root.data;
-		shiftAndDestroy(root);
+		E data = getHead();
+		if (targetableNode.right != null) {
+			shiftAndDestroyHead(targetableNode.right);
+		} else {
+			targetableNode.parent.left = null;
+		}
 		size--;
 		return data;
 	}
 
 	/**
-	 * This method will shift the left child node of any given tree or sub tree into it's parent's postion then
-	 * recursively call itself to fill that new gap in it's old position; it will do this until there is no left child
-	 * node to draw from, at which time it will pull the lone right node child into the gap and be finished, if a node
-	 * with no children is reached before it reaches a node with only a right child, then the node is destroyed.
+	 * This method takes a root/subroot node and finds the largetst data point in its left subtree,
+	 * it then swaps data from the given root and that of the found node. It saves the root's originol data and
+	 * removes the node that it was saved at. Implicit in this function is that the subtree of the deleted node point
+	 * is preserved.
 	 *
-	 * @param node this parameter will accept either the tree's root, or the left child node of any given parent node.
+	 * @param node
 	 */
-	private void shiftAndDestroy(BinaryTreeNode node) {
-		if (node.left != null) {
-			node.data = node.left.data;
-		} else if (node.right != null) {
-			node.data = node.right.data;
-		} else if (node.parent.left == node) {
-			node.parent.left = null; // oops, parent's left node is destroyed
-		} else {
-			node.parent.right = null;// oops, parent's right node is destroyed
-		}
+	private E shiftAndDestroyTail(BinaryTreeNode node) {
+		E returnable = node.data;
+		BinaryTreeNode nodesTail = tailChaser(node);
+		node.data = nodesTail.data;
+
+		// the bellow two lines
+		nodesTail.parent.right = nodesTail.left;
+		nodesTail.left.parent = nodesTail.parent;
+		return returnable;
 	}
 
+	private E shiftAndDestroyHead(BinaryTreeNode node) {
+		BinaryTreeNode nodesHead = headHunter(node);
+		node.parent.left = nodesHead;
+		return nodesHead.data;
+	}
 	@Override
 	public E removeTail() {
-		BinaryTreeNode tail = tailChaser(root);
-		E data = tail.data;
-		tail.parent.right = null;
 		size--;
-		return data;
+		return shiftAndDestroyTail(root);
 	}
 
 	@Override
 	public boolean remove(E value) {
 
 		shouldDestroy = NavigationFlags.DESTROY;
+		shouldSeek = NavigationFlags.SEEK;
 		seeker(value, root, 0);
-		boolean destroyer = shouldDestroy == NavigationFlags.DESTROYED;
-		shouldDestroy = NavigationFlags.IDLE;
+		boolean destroyer = (shouldDestroy == NavigationFlags.DESTROYED);
+		shouldSeek = shouldDestroy = NavigationFlags.IDLE;
 		if (destroyer) size--;
 		return destroyer;
 	}
@@ -211,20 +269,24 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	private class MyIter implements Iterator {
 		private int pos;
 		private BinaryTreeNode target;
+		private BinaryTreeNode phauxRoot;
 		private boolean canRemove;
 		private boolean returnedSelf;
+		private Stack<E> breadCrumbs;
+
 
 		MyIter() {
 			this.pos = 0;
 			this.target = root;
+
 			canRemove = false;
 			returnedSelf = false;
 			while (target.left != null) target = target.left;
 		}
 
 		/**
-		 * Returns {@code true} if the iteration has more elements.
-		 * (In other words, returns {@code true} if {@link #next} would
+		 * Returns true if the iteration has more elements.
+		 * (In other words, returns true if {@link #next} would
 		 * return an element rather than throwing an exception.)
 		 *
 		 * @return {@code true} if the iteration has more elements
@@ -249,13 +311,14 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 
 	}
 
-	/** This private inner class is used to represent the data nodes within the BinaryTree, each node can hold a
+	/**
+	 * This private inner class is used to represent the data nodes within the BinaryTree, each node can hold a
 	 * a generic data value along with left, right, and parent BinaryTreeNode(BTN) pointers.
-	 *
+	 * <p>
 	 * The left BTN pointer should always hold values that satisfy: (btn.data.compareTo(otherData) <= 0)
-	 *
+	 * <p>
 	 * The right BTN pointer should always hold values that satisfy: (btn.data.compareTo(otherData) > 0)
-	 *
+	 * <p>
 	 * The parent BTN pointer is a convenience pointer for tracing back to the root from any given node in the tree.
 	 */
 	private class BinaryTreeNode {
@@ -264,7 +327,8 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		private BinaryTreeNode right;
 		private BinaryTreeNode parent;
 
-		/** creates a basic node that holds data and instantiates the left and right node pointers to null.
+		/**
+		 * creates a basic node that holds data and instantiates the left and right node pointers to null.
 		 *
 		 * @param data a generic data type that the client declares at the instantiation of the binary tree.
 		 */
