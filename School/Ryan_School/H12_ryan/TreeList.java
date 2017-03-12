@@ -127,28 +127,6 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		return pos;
 	}
 
-	/** this method does the dirty work of finding where in the tree a node should be added. In essence, this method
-	 * is hiding the value in the tree, but according to an in-order traversal logic.
-	 *
-	 * @param value the data value to be stored once the propper spot is found
-	 * @param node the value parameter will be compared against the data in this node and a decision will be made from
-	 *             there about what direction to proceed in.
-	 */
-	private void hideLikeNinja(E value, BinaryTreeNode node) {
-		if (node != null) {
-			if (shouldHide == NavigationFlags.HIDENODE) {
-				if (node.data.compareTo(value) > 0 && node.left == null) {
-					node.left = new BinaryTreeNode(value, node);
-					shouldHide = NavigationFlags.NODEHIDDEN;
-				} else if (node.data.compareTo(value) <= 0 && node.right == null) {
-					node.right = new BinaryTreeNode(value, node);
-					shouldHide = NavigationFlags.NODEHIDDEN;
-				} else hideLikeNinja(value, (node.data.compareTo(value) <= 0) ? node.left : node.right);
-
-			}
-		}
-	}
-
 	@Override
 	public boolean contains(E value) {
 		return indexOf(value) >= 0;
@@ -167,6 +145,39 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		size++;
 	}
 
+	/**
+	 * this method does the dirty work of finding where in the tree a node should be added. In essence, this method
+	 * is hiding the value in the tree, but according to an in-order traversal logic.
+	 *
+	 * @param value the data value to be stored once the propper spot is found
+	 * @param node  the value parameter will be compared against the data in this node and a decision will be made from
+	 *              there about what direction to proceed in.
+	 */
+	private void hideLikeNinja(E value, BinaryTreeNode node) {
+		if (node != null) {
+			if (shouldHide == NavigationFlags.HIDENODE) {
+				int relativeVal = node.data.compareTo(value);
+				if (relativeVal >= 0) {
+					if (!node.hasLeft()) {
+						node.setLeft(new BinaryTreeNode(value, node));
+//						System.out.println("node.data = " + node.data);
+//						System.out.println("node.left.data = " + node.left.data);
+						shouldHide = NavigationFlags.NODEHIDDEN;
+					} else {
+						hideLikeNinja(value, node.left);
+					}
+				} else if (relativeVal < 0) {
+					if (!node.hasRight()) {
+						node.setRight(new BinaryTreeNode(value, node));
+						shouldHide = NavigationFlags.NODEHIDDEN;
+					} else {
+						hideLikeNinja(value, node.right);
+					}
+				} else hideLikeNinja(value, (node.data.compareTo(value) <= 0) ? node.left : node.right);
+
+			}
+		}
+	}
 	@Override
 	public void addAll(ISortedList other) {
 		Iterator otherIter = other.iterator();
@@ -273,7 +284,9 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	public String toString() {
 		String s = "{ ";
 		MyIter iter = new MyIter();
-		if (iter.hasNext()) s += iter.next();
+		if (iter.hasNext()) {
+			s += iter.next();
+		}
 		while (iter.hasNext()) {
 			s += ", " + iter.next();
 		}
@@ -282,13 +295,13 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	}
 
 	private class MyIter implements Iterator {
-		//		private int pos;
+				private int pos;
 		private BinaryTreeNode target;
 		private Stack<BinaryTreeNode> breadCrumbs;
 
 
 		MyIter() {
-//			this.pos = -1;
+			this.pos = -1;
 			this.target = root;
 			this.breadCrumbs = new Stack<>();
 			breadCrumbs.push(target);
@@ -307,7 +320,7 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		 */
 		@Override
 		public boolean hasNext() {
-			return !breadCrumbs.empty();
+			return !breadCrumbs.empty() && pos+1 < size;
 		}
 
 		/**
@@ -326,10 +339,13 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 			} else if (target.hasRight()) {
 				breadCrumbs.push(target.right);
 			}
-			while (!breadCrumbs.empty() && breadCrumbs.peek().hasLeft()) {
-				breadCrumbs.push(breadCrumbs.peek().left);
+			if (!breadCrumbs.empty()) {
+				while (breadCrumbs.peek().hasLeft()) {
+					breadCrumbs.push(breadCrumbs.peek().left);
+					breadCrumbs.peek();
+				}
 			}
-//			pos++;
+			pos++;
 			return target.data;
 		}
 
@@ -377,6 +393,13 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 			this.parent = parent;
 		}
 
+		private void setLeft(BinaryTreeNode node) {
+			this.left = node;
+		}
+
+		private void setRight(BinaryTreeNode node) {
+			this.right = node;
+		}
 		private boolean hasLeft() {
 			return left != null;
 		}
