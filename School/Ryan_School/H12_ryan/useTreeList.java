@@ -110,8 +110,8 @@ public class useTreeList {
 		list2.add("youtube");
 		list2.add("butts.jpeg");
 
-		System.out.println("initial list1 configuration");
-		System.out.println("\nList 1: " + list1 + "\nexpected:{apple, banana, cherries, peaches, peaches, " +
+		System.out.println("\ninitial list1 configuration");
+		System.out.println("List 1: " + list1 + "\nexpected:{apple, banana, cherries, peaches, peaches, " +
 				"waffle fries}\nSize: " + list1.size() + " -> expected: 6\n");
 
 		System.out.println("initial list2 configuration");
