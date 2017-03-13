@@ -210,9 +210,12 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	private E shiftAndDestroyHead(BinaryTreeNode node) {
 		BinaryTreeNode oldHead = headHunter(node);
 		E data = oldHead.data;
-		if (oldHead.hasRight()) {
-			oldHead.right.parent = oldHead.parent;
-			oldHead.parent.left = oldHead.right;
+
+		if (root != oldHead) {
+			if (oldHead.hasRight()) {
+				oldHead.right.parent = oldHead.parent;
+				oldHead.parent.left = oldHead.right;
+			}
 		}
 
 		size--;
@@ -236,7 +239,6 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		shouldSeek = NavigationFlags.IDLE;
 		boolean isDestroyed = targetableNode != null;
 		if (isDestroyed) {
-			size--;
 			if (targetableNode.hasLeft()) {
 				targetableNode.data = shiftAndDestroyTail(targetableNode.left);
 			} else if (targetableNode.hasRight()) {
@@ -246,6 +248,7 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 					targetableNode.parent.left = targetableNode.right;
 				}
 				targetableNode.right.parent = targetableNode.parent;
+				size--;
 			}
 		}
 		return isDestroyed;

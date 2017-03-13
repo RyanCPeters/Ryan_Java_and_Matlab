@@ -110,13 +110,17 @@ public class useTreeList {
 		list2.add("youtube");
 		list2.add("butts.jpeg");
 
+		System.out.println("initial list1 configuration");
 		System.out.println("\nList 1: " + list1 + "\nexpected:{apple, banana, cherries, peaches, peaches, " +
 				"waffle fries}\nSize: " + list1.size() + " -> expected: 6\n");
 
+		System.out.println("initial list2 configuration");
 		System.out.println("List 2: " + list2 + "\nexpected:[bandanna, butts.jpeg, youtube]\nSize: " +
 				list2.size() + " -> expected: 3\n");
-		System.out.println("list1.indexOf(cherries)->" + list1.indexOf("cherries") + "->expected: 2");
+
+		System.out.println("list1.indexOf(cherries)->" + list1.indexOf("cherries") + "->expected: 2\n");
 		System.out.println("list1.remove(\"peaches\")->" + list1.remove("peaches") + " -> expected: true\n");
+
 		System.out.println("List 1: " + list1 + "\nexpected:[apple, banana, cherries, peaches, waffle fries]" +
 				"\nSize: " + list1.size() + "->expected: 5\n");
 
