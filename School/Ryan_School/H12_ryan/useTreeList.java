@@ -14,43 +14,43 @@ public class useTreeList {
 		ISortedList<Integer> list3 = new TreeList<>();
 		ISortedList<Integer> list4 = new TreeList<>();
 
-//		for (int i = 1; i < 101; i++) {
-//			if (i < 51) list3.add(i);
-//			else list4.add(i);
-//		}
-//		System.out.println("list3 pre-addAll() with list3 < 51: \n" + list3);
-//		System.out.println("list4 pre-addAll() with list4 > 50: \n" + list4);
-//		list3.addAll(list4);// this should use the posterior add method
-//		System.out.println("\nlist3 post-addAll() with list3 1-100: \n" + list3);
-//		System.out.println("list4 post-addAll() with list4 > 50: \n" + list4);
-//
-//
-//		list3 = new TreeList<>();
-//		list4 = new TreeList<>();
-//		System.out.println("\n-----------------------------------------------------\n");
-//		for (int i = 1; i < 101; i++) {
-//			if (i > 50) list3.add(i);
-//			else list4.add(i);
-//		}
-//		System.out.println("list3 pre-addAll() with list3 > 50: \n" + list3);
-//		System.out.println("list4 pre-addAll() with list4 < 51: \n" + list4);
-//		list3.addAll(list4);// this should use the anterior add method
-//		System.out.println("\nlist3 post-addAll() with list3 being 1-100: \n" + list3);
-//		System.out.println("list4 post-addAll() with list4 < 51: \n" + list4);
-//
-//
-//		list3 = new TreeList<>();
-//		list4 = new TreeList<>();
-//		System.out.println("\n-----------------------------------------------------\n");
-//		for (int i = 1; i < 101; i++) {
-//			if (i % 2 == 0) list3.add(i);
-//			else list4.add(i);
-//		}
-//		System.out.println("list3 pre-addAll() with list3 being evens: \n" + list3);
-//		System.out.println("list2 pre-addAll() with list4 being odds: \n" + list4);
-//		list3.addAll(list4);// this should use the anterior add method
-//		System.out.println("\nnlist3 post-addAll() with list3 being 1 to 100: \n" + list3);
-//		System.out.println("list4 post-addAll() with list4 still being odds: \n" + list4);
+		for (int i = 1; i < 101; i++) {
+			if (i < 51) list3.add(i);
+			else list4.add(i);
+		}
+		System.out.println("list3 pre-addAll() with list3 < 51: \n" + list3);
+		System.out.println("list4 pre-addAll() with list4 > 50: \n" + list4);
+		list3.addAll(list4);// this should use the posterior add method
+		System.out.println("\nlist3 post-addAll() with list3 1-100: \n" + list3);
+		System.out.println("list4 post-addAll() with list4 > 50: \n" + list4);
+
+
+		list3 = new TreeList<>();
+		list4 = new TreeList<>();
+		System.out.println("\n-----------------------------------------------------\n");
+		for (int i = 1; i < 101; i++) {
+			if (i > 50) list3.add(i);
+			else list4.add(i);
+		}
+		System.out.println("list3 pre-addAll() with list3 > 50: \n" + list3);
+		System.out.println("list4 pre-addAll() with list4 < 51: \n" + list4);
+		list3.addAll(list4);// this should use the anterior add method
+		System.out.println("\nlist3 post-addAll() with list3 being 1-100: \n" + list3);
+		System.out.println("list4 post-addAll() with list4 < 51: \n" + list4);
+
+
+		list3 = new TreeList<>();
+		list4 = new TreeList<>();
+		System.out.println("\n-----------------------------------------------------\n");
+		for (int i = 1; i < 101; i++) {
+			if (i % 2 == 0) list3.add(i);
+			else list4.add(i);
+		}
+		System.out.println("list3 pre-addAll() with list3 being evens: \n" + list3);
+		System.out.println("list2 pre-addAll() with list4 being odds: \n" + list4);
+		list3.addAll(list4);// this should use the anterior add method
+		System.out.println("\nnlist3 post-addAll() with list3 being 1 to 100: \n" + list3);
+		System.out.println("list4 post-addAll() with list4 still being odds: \n" + list4);
 
 
 		/*--------------------------------------------------------------------------------------------
@@ -168,7 +168,8 @@ public class useTreeList {
 				list1.size() + "->expected: 3\n");
 
 		list1.addAll(list2);
-		System.out.println("#15 List 1: " + list1 + "\nexpected:[banana, bandanna, butts.jpeg, cherries, peaches, youtube]" +
+		System.out.println(
+				"#15 List 1: " + list1 + "\n\texpected:[banana, bandanna, butts.jpeg, cherries, peaches, youtube]" +
 				"\nSize: " + list1.size() + "->expected: 6\n");
 
 		System.out.println("#16 Removed Head: " + list1.removeHead() + "->expected: banana\n");
