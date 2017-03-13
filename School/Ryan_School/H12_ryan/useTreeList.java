@@ -63,7 +63,9 @@ public class useTreeList {
 				-6, -77, -20, 52, 93, -92, -38, 58, -9, -91, 0};
 		ArrayList<Integer> sortedComparison = new ArrayList<>(51);
 //		Random rand = new Random();
-		for (int i = 0; i < 51; i++) {
+
+		int size = 51;
+		for (int i = 0; i < size; i++) {
 //			int ran = rand.nextInt(200) - 100;
 //			System.out.print(ran+", ");
 //			if( i%10 == 0 ) System.out.println();
@@ -78,7 +80,7 @@ public class useTreeList {
 		Iterator iter = sortedComparison.iterator();
 		int counter = 0;
 		while (iter.hasNext()) {
-			if (counter % (51 / 3) == 0) {
+			if (counter % (size / 3) == 0) {
 				System.out.print(",\n " + String.format("%4s", iter.next()));
 			} else {
 				System.out.print(", " + String.format("%4s", iter.next()));
