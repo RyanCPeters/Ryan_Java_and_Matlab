@@ -17,7 +17,7 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 
 	private NavigationFlags shouldSeek = NavigationFlags.IDLE;
 	private NavigationFlags shouldHide = NavigationFlags.IDLE;
-	private NavigationFlags shouldDestroy = NavigationFlags.IDLE;
+	private NavigationFlags shouldClear = NavigationFlags.IDLE;
 
 	public TreeList() {
 		this(null, null, 0);
@@ -100,7 +100,7 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	public int indexOf(E value) {
 		MyIter iter = new MyIter();
 		E itersVal = (iter.hasNext()) ? iter.next() : value;
-		int pos = -1;
+		int pos = 0;
 		while (iter.hasNext() && itersVal != value) {
 			itersVal = iter.next();
 			pos++;
@@ -111,26 +111,42 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	/**this method provides a means to locate a specific value in the TreeList.
 	 * @param value the value we are looking for in the tree
 	 * @param node the current node target holding a data value that we will check "value" against.
-	 * @param pos an integer value counting how many nodes away from the head of the tree or subtree we are. dependent
-	 *            upon the preconditions set up by the method that called seeker.
 	 * @return
 	 */
-	private int seeker(E value, BinaryTreeNode node, int pos) {
-		if (shouldDestroy == NavigationFlags.CLEAR) node.parent = null;
+	private boolean seeker(E value, BinaryTreeNode node) {
+
 		if (node != null) {
-			if (shouldSeek == NavigationFlags.SEEK && node.hasLeft()) {
-				pos = seeker(value, node.left, pos);
+			int relativeVal = (value != null) ? value.compareTo(node.data) : 0;
+			boolean goLeft = relativeVal < 0;
+			boolean goRight = relativeVal > 0;
+			boolean foundIt = relativeVal == 0;
+			if (shouldClear == NavigationFlags.CLEAR) {
+				node.parent = null;
+				goLeft = goRight = true;
+				foundIt = false;
+
 			}
-			pos++;
-			if (shouldSeek == NavigationFlags.SEEK && node.data.compareTo(value) == 0) {
-				shouldSeek = NavigationFlags.FOUND;
+
+
+			if (goLeft) {
+				if (node.hasLeft()) {
+					return seeker(value, node.left);
+				}
+			}
+			if (goRight) {
+				if (node.hasRight()) {
+					return seeker(value, node.right);
+				}
+
+			}
+			if (foundIt) {
 				targetableNode = node;
+				return true;
 			}
-			if (shouldSeek == NavigationFlags.SEEK && node.hasRight()) {
-				pos = seeker(value, node.right, pos);
-			}
+
 		}
-		return pos;
+		return false;
+
 	}
 
 	/**
@@ -235,9 +251,9 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	public boolean remove(E value) {
 		targetableNode = null;
 		shouldSeek = NavigationFlags.SEEK;
-		seeker(value, root, 0);
+		boolean isDestroyed = seeker(value, root);
 		shouldSeek = NavigationFlags.IDLE;
-		boolean isDestroyed = targetableNode != null;
+
 		if (isDestroyed) {
 			if (targetableNode.hasLeft()) {
 				targetableNode.data = shiftAndDestroyTail(targetableNode.left);
@@ -256,10 +272,11 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 
 	@Override
 	public void clear() {
-		shouldDestroy = NavigationFlags.CLEAR;
-		seeker(null, root, 0);
-		shouldDestroy = NavigationFlags.IDLE;
-		root = null;
+		shouldClear = NavigationFlags.CLEAR;
+		seeker(null, root);
+		shouldClear = NavigationFlags.IDLE;
+		root.right = root.left = null;
+		root.data = null;
 		size = 0;
 	}
 
