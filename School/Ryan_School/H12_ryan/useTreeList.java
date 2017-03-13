@@ -53,6 +53,17 @@ public class useTreeList {
 //		System.out.println("list4 post-addAll() with list4 still being odds: \n" + list4);
 
 
+		/*--------------------------------------------------------------------------------------------
+		* <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+		* >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+		* ---------------------------------------------------------------------------------------------*/
+
+		/*
+		* Please note that there is also a file in the same github repo as this client file that has Ryan's
+		* current output when using these test conditions, use that to get an idea of what to expect when
+		* using this file.
+		*/
+
 		System.out.println("\n-----------------------------------------------------\n");
 		list3 = new TreeList<>();
 		list4 = new TreeList<>();
