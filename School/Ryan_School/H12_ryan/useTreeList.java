@@ -5,6 +5,7 @@ import java.util.Iterator;
  * A handful of test cases
  *
  * @author Charlie on 3/7/2017.
+ * modified by Ryan on 3/12/2017
  */
 public class useTreeList {
 	public static void main(String[] args) {
