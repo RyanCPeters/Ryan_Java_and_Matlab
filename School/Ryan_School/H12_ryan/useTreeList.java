@@ -124,70 +124,71 @@ public class useTreeList {
 		list2.add("youtube");
 		list2.add("butts.jpeg");
 
-		System.out.println("\ninitial list1 configuration");
+		System.out.println("\n#1 initial list1 configuration");
 		System.out.println("List 1: " + list1 + "\nexpected:{apple, banana, cherries, peaches, peaches, " +
 				"waffle fries}\nSize: " + list1.size() + " -> expected: 6\n");
 
-		System.out.println("initial list2 configuration");
+		System.out.println("#2 initial list2 configuration");
 		System.out.println("List 2: " + list2 + "\nexpected:[bandanna, butts.jpeg, youtube]\nSize: " +
 				list2.size() + " -> expected: 3\n");
 
-		System.out.println("list1.indexOf(cherries)->" + list1.indexOf("cherries") + "->expected: 2\n");
-		System.out.println("list1.remove(\"peaches\")->" + list1.remove("peaches") + " -> expected: true\n");
+		System.out.println("#3 list1.indexOf(cherries)->" + list1.indexOf("cherries") + "->expected: 2\n");
+		System.out.println("#4 list1.remove(\"peaches\")->" + list1.remove("peaches") + " -> expected: true\n");
 
-		System.out.println("list1 after having peaches removed");
+		System.out.println("#5 list1 after having peaches removed");
 		System.out.println("List 1: " + list1 + "\nexpected:[apple, banana, cherries, peaches, waffle fries]" +
 				"\nSize: " + list1.size() + "->expected: 5\n");
 
 
-//		System.out.println("list1.remove(donuts)-> " + list1.remove("donuts") + " -> expected: false");
-//
-//
-//		System.out.println("list1.remove(waffle fries)-> " +
-//				list1.remove("waffle fries") + " -> expected: true\n");
-//
-//		System.out.println("List 1: " + list1 + "\nexpected:[apple, banana, cherries, peaches]" + "\nSize: " +
-//				list1.size() + "->expected: 4\n");
-//		Iterator<String> iter1 = list1.iterator();
-//		System.out.print("iter1.hasNext()");
-//		System.out.println(iter1.hasNext() + "->expected: true // " + " ");
-//		System.out.print("iter1.next()");
-//		System.out.println(iter1.next() + "->expected: apple \n");
-//		iter1.remove();
-//		System.out.println("iter1.remove()-> expected to remove apple");
-//		System.out.println("List 1: " + list1 + "\nexpected:[banana, cherries, peaches]" + "\nSize: " +
-//				list1.size() + "->expected: 3\n");
-//		try {
-//			iter1.remove();
-//			System.out.println("do we have an error message?------------------------");
-//		} catch (Exception e) {
-//			System.out.println(e.getMessage());
-//		}
-//		System.out.println("\nList 1: " + list1 + "\nexpected:[banana, cherries, peaches]" + "\nSize: " +
-//				list1.size() + "->expected: 3\n");
-//
-//		list1.addAll(list2);
-//		System.out.println("List 1: " + list1 + "\nexpected:[banana, bandanna, butts.jpeg, cherries, peaches, youtube]" +
-//				"\nSize: " + list1.size() + "->expected: 6\n");
-//
-//		System.out.println("Removed Head: " + list1.removeHead() + "->expected: banana\n");
-//
-//		System.out.println("List 1: " + list1 + "\nexpected:[bandanna, butts.jpeg, cherries, peaches, youtube]" +
-//				"\nSize: " + list1.size() + "->expected: 5\n");
-//
-//		System.out.println("Removed Tail: " + list1.removeTail() + "->expected: youtube\n");
-//
-//		System.out.println("List 1: " + list1 + "\nexpected:[bandanna, butts.jpeg, cherries, peaches]" + "\nSize: " +
-//				list1.size() + "->expectd: 4\n");
-//
-//		list2.clear();
-//		System.out.println("List 2: " + list2 + "\nexpected:[]" + "\nSize: " + list2.size() + "->expected: 0\n");
-//
-//		try {
-//			list2.removeHead();
-//			System.out.println("do we have an error message?------------------------");
-//		} catch (Exception e) {
-//			System.out.println(e.getMessage());                                 // *Exception message*
-//		}
+		System.out.println("#6 list1.remove(donuts)-> " + list1.remove("donuts") + " -> expected: false");
+
+
+		System.out.println("#7 list1.remove(waffle fries)-> " +
+				list1.remove("waffle fries") + " -> expected: true\n");
+
+		System.out.println("#8 List 1: " + list1 + "\nexpected:[apple, banana, cherries, peaches]" + "\nSize: " +
+				list1.size() + "->expected: 4\n");
+		Iterator<String> iter1 = list1.iterator();
+		System.out.print("#9 iter1.hasNext()");
+		System.out.println(iter1.hasNext() + "->expected: true // " + " ");
+		System.out.print("#10 iter1.next()");
+		System.out.println(iter1.next() + "->expected: apple \n");
+		iter1.remove();
+		System.out.println("#11 iter1.remove()-> expected to remove apple");
+		System.out.println("#12 List 1: " + list1 + "\nexpected:[banana, cherries, peaches]" + "\nSize: " +
+				list1.size() + "->expected: 3\n");
+		try {
+			System.out.println("#13 calling remove without first calling next(); do we have an error message?----------");
+			iter1.remove();
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+		System.out.println("\n#14 List 1: " + list1 + "\nexpected:[banana, cherries, peaches]" + "\nSize: " +
+				list1.size() + "->expected: 3\n");
+
+		list1.addAll(list2);
+		System.out.println("#15 List 1: " + list1 + "\nexpected:[banana, bandanna, butts.jpeg, cherries, peaches, youtube]" +
+				"\nSize: " + list1.size() + "->expected: 6\n");
+
+		System.out.println("#16 Removed Head: " + list1.removeHead() + "->expected: banana\n");
+
+		System.out.println("#17 List 1: " + list1 + "\nexpected:[bandanna, butts.jpeg, cherries, peaches, youtube]" +
+				"\nSize: " + list1.size() + "->expected: 5\n");
+
+		System.out.println("#18 Removed Tail: " + list1.removeTail() + "->expected: youtube\n");
+
+		System.out.println("#19 List 1: " + list1 + "\nexpected:[bandanna, butts.jpeg, cherries, peaches]" + "\nSize: " +
+				list1.size() + "->expectd: 4\n");
+
+		list2.clear();
+		System.out.println("#20 List 2: " + list2 + "\nexpected:[]" + "\nSize: " + list2.size() + "->expected: 0\n");
+
+		try {
+			list2.removeHead();
+			System.out.println("#21 do we have an error message?------------------------");
+		} catch (Exception e) {
+			System.out.println(e.getMessage());                                 // *Exception message*
+		}
 	}
 }

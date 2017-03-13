@@ -35,10 +35,6 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		this.root = root;
 	}
 
-	private void setRoot(BinaryTreeNode nuRoot) {
-		this.root = nuRoot;
-	}
-
 	@Override
 	public int size() {
 		return size;
@@ -205,19 +201,39 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	}
 
 	/**
-	 * This method takes a root/subroot node and finds the largetst data point in its left subtree,
-	 * it then swaps data from the given root and that of the found node. It saves the root's originol data and
+	 * This method takes a node and finds the largest data point in its left subtree,
+	 * it then swaps data from the given node with that of the found node. It saves the root's originol data and
 	 * removes the node that it was saved at. Implicit in this function is that the subtree of the deleted node point
 	 * is preserved.
 	 *
 	 * @param node
 	 */
 	private E shiftAndDestroyTail(BinaryTreeNode node) {
-		BinaryTreeNode oldTail = tailChaser(node);
-		E returnable = oldTail.data;
-		if (oldTail.hasLeft()) {
-			oldTail.left.parent = oldTail.parent;
-			oldTail.parent.right = oldTail.left;
+		E returnable;
+		BinaryTreeNode sacTail;
+		if (node.hasRight()) {
+			sacTail = tailChaser(node.right);
+			returnable = sacTail.data;
+			if (sacTail.hasLeft()) {
+				sacTail.parent.right = sacTail.left;
+				sacTail.left.parent = sacTail.parent;
+				sacTail = null;
+			}
+			if (sacTail.hasLeft()) {
+				sacTail.parent.right = sacTail.left;
+			}
+		} else if (node.hasLeft()) {
+			returnable = node.data;
+			if (node.parent.left == node) node.parent.left = node.left;
+			else node.parent.right = node.left;
+			node.left.parent = node.parent;
+			node = null;
+		} else {
+			returnable = node.data;
+
+			if (node.parent.left == node) node.parent.left = null;
+			else node.parent.right = null;
+			node = null;
 		}
 		size--;
 		return returnable;
@@ -251,23 +267,30 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	public boolean remove(E value) {
 		targetableNode = null;
 		shouldSeek = NavigationFlags.SEEK;
-		boolean isDestroyed = seeker(value, root);
+		boolean isDestroyable = seeker(value, root) && targetableNode.data == value;
 		shouldSeek = NavigationFlags.IDLE;
 
-		if (isDestroyed) {
+		if (isDestroyable) {
 			if (targetableNode.hasLeft()) {
-				targetableNode.data = shiftAndDestroyTail(targetableNode.left);
+				targetableNode.data = shiftAndDestroyTail(targetableNode);
 			} else if (targetableNode.hasRight()) {
-				if (targetableNode.parent.right == targetableNode) {
-					targetableNode.parent.right = targetableNode.right;
-				} else {
-					targetableNode.parent.left = targetableNode.right;
+				if (targetableNode.hasParent()) {
+					if (targetableNode.parent.right == targetableNode) {
+						targetableNode.parent.right = targetableNode.right;
+					} else {
+						targetableNode.parent.left = targetableNode.right;
+					}
+					targetableNode.right.parent = targetableNode.parent;
+
+				} else {// the only node that can have no parent is the root node. thus...
+					root = targetableNode.right;
 				}
-				targetableNode.right.parent = targetableNode.parent;
+
 				size--;
+
 			}
 		}
-		return isDestroyed;
+		return isDestroyable;
 	}
 
 	@Override
@@ -406,10 +429,14 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		@Override
 		public void remove() {
 			if (canRemove) {
-				target = breadCrumbs.remove(pos);
+				target = breadCrumbs.remove(pos - 1);
 				canRemove = false;
+				if (target.data == null) throw new IllegalStateException("no data at this point to return");
 				TreeList.this.remove(target.data);
 				pos--;
+			} else {
+				throw new IllegalStateException("\n\t\tthe next() method has not yet been called, \n" +
+						"\t\tor the remove() method has already been called after the last call to the next() method");
 			}
 		}
 
