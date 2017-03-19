@@ -86,8 +86,7 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	 */
 	@Override
 	public boolean contains(E value) {
-		if (indexOf(value) < 0) return false;
-		return true;
+		return indexOf(value) >= 0;
 	}
 
 	/**

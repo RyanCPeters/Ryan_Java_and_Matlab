@@ -347,7 +347,6 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 		Stream.Builder<String> stringStream = Stream.builder();
 
 		stringStream.add("{ ");
-		String[] sArray = new String[size+2];
 		MyIter iter = new MyIter();
 		int counter = 0;
 		if (iter.hasNext()) {
