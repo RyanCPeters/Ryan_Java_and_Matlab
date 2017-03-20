@@ -61,11 +61,11 @@ public class TestHashDict {
 		System.out.println("\t\t\t\t\tExpected: false");
 		System.out.println();
 		System.out.println(
-				"Test 4: wordDict.containsKey(Tosit) " + wordDict.containsKey("chippy"));
+				"Test 4: wordDict.containsKey(chippy) " + wordDict.containsKey("chippy"));
 		System.out.println("\t\t\t\t\tExpected: true");
 		System.out.println();
 		System.out.println(
-				"Test 5: wordDict.containsKey(tosit) " + wordDict.containsKey("Chippy"));
+				"Test 5: wordDict.containsKey(Chippy) " + wordDict.containsKey("Chippy"));
 		System.out.println("\t\t\t\t\tExpected: false");
 		System.out.println();
 		System.out.println(
@@ -85,11 +85,11 @@ public class TestHashDict {
 		System.out.println("\t\t\t\t\tExpected: false");
 		System.out.println();
 		System.out.println(
-				"Test 10: wordDict.containsValue(Tosit) " + wordDict.containsValue(testObj3));
+				"Test 10: wordDict.containsValue(chippy) " + wordDict.containsValue(testObj3));
 		System.out.println("\t\t\t\t\tExpected: true");
 		System.out.println();
 		System.out.println(
-				"Test 11: wordDict.containsValue(tosit) " + wordDict.containsValue(testObj4));
+				"Test 11: wordDict.containsValue(Chippy) " + wordDict.containsValue(testObj4));
 		System.out.println("\t\t\t\t\tExpected: false");
 		System.out.println();
 		//ToDo: more test conditions for the remove methods and the replace method.

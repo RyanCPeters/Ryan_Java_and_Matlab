@@ -2,8 +2,7 @@
  * @author Ryan Peters
  * @date 3/17/2017
  */
-public class HashDict<K, V> implements IDict<K, V>//, Iterable
-{
+public class HashDict<K, V> implements IDict<K, V> {
 	private static final int DEFAULT_CAP = 16;
 	private int size;
 	private int cap;//bucket capacity for the hash table
@@ -286,15 +285,6 @@ public class HashDict<K, V> implements IDict<K, V>//, Iterable
 		}
 	}
 
-//	/**
-//	 * Returns an iterator over elements of type {@code T}.
-//	 *
-//	 * @return an Iterator.
-//	 */
-//	@Override
-//	public Iterator iterator() {
-//		return new HashIter();
-//	}
 
 	/**
 	 * The private inner class responsible for tracking the mapping of values and
@@ -323,55 +313,4 @@ public class HashDict<K, V> implements IDict<K, V>//, Iterable
 			return curr.next != null;
 		}
 	}
-
-//	private class HashIter implements Iterator {
-//		private int pos;
-//		private int idx;
-//		private HashEntry targetEntry;
-//
-//		HashIter() {
-//			// just to clearly spell it out that we start as nulls :)
-//			targetEntry = null;
-//
-//			idx = pos = -1;
-//		}
-//
-//		/**
-//		 * Returns {@code true} if the iteration has more elements.
-//		 * (In other words, returns {@code true} if {@link #next} would
-//		 * return an element rather than throwing an exception.)
-//		 *
-//		 * @return {@code true} if the iteration has more elements
-//		 */
-//		@Override
-//		public boolean hasNext() {
-//			return pos + 1 < size;
-//		}
-//
-//		/**
-//		 * Returns the next element in the iteration.
-//		 *
-//		 * @return the next element in the iteration
-//		 * @throws NoSuchElementException if the iteration has no more elements
-//		 */
-//		@Override
-//		public V next() {
-//			if (!hasNext()) throw new NoSuchElementException("the iterator has" +
-//					" reached the end of the dictionary");
-//			if (idx == -1) {
-//				targetEntry = theArray[++idx];
-//
-//			} else {
-//				if (targetEntry.hasNext()) {
-//					targetEntry = targetEntry.next;
-//				} else if (idx + 1 < theArray.length) {
-//					targetEntry = theArray[++idx];
-//				}
-//			}
-//			if (targetEntry == null || targetEntry.value == null)
-//				throw new NoSuchElementException("there was no data value saved for" +
-//						" this entry");
-//			return (V) targetEntry.value;
-//		}
-//	}
 }
