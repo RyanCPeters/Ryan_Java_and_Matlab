@@ -35,48 +35,63 @@ public class TestHashDict {
 				"And awaiting the sensation " +
 				"From a cheap and chippy chopper on a big black block! ";
 
-		String[] strArraySpaceSplit = demoString.split(" ");
+		String[] strArraySpaceSplit = demoString.trim().split(" ");
 		wordDict = new HashDict<>(strArraySpaceSplit.length / 2);
 		setUpTileDict();
 		for (String elem : strArraySpaceSplit) {
-			setUpWordDict(elem);
+			if (!elem.equals("")) {
+				setUpWordDict(elem.trim());
+			}
 		}
-		System.out.println("the contents of strArraySpaceSplit are:\n");
-		for (String s : strArraySpaceSplit) System.out.println(s);
+//		System.out.println("the contents of strArraySpaceSplit are:\n");
+//		for (String s : strArraySpaceSplit) System.out.println(s);
 		ScrabWord testObj1 = new ScrabWord("Tosit");
 		ScrabWord testObj2 = new ScrabWord("tosit");
 		ScrabWord testObj3 = new ScrabWord("chippy");
 		ScrabWord testObj4 = new ScrabWord("Chippy");
 		System.out.println(
 				"Test 1: wordDict.toString()\n" + wordDict);
+		System.out.println();
 		System.out.println(
 				"Test 2: wordDict.containsKey(Tosit) " + wordDict.containsKey("Tosit"));
-		System.out.println("Expected: false");
+		System.out.println("\t\t\t\t\tExpected: false");
+		System.out.println();
 		System.out.println(
 				"Test 3: wordDict.containsKey(tosit) " + wordDict.containsKey("tosit"));
-		System.out.println("Expected: false");
+		System.out.println("\t\t\t\t\tExpected: false");
+		System.out.println();
 		System.out.println(
 				"Test 4: wordDict.containsKey(Tosit) " + wordDict.containsKey("chippy"));
-		System.out.println("Expected: true");
+		System.out.println("\t\t\t\t\tExpected: true");
+		System.out.println();
 		System.out.println(
 				"Test 5: wordDict.containsKey(tosit) " + wordDict.containsKey("Chippy"));
-		System.out.println("Expected: false");
+		System.out.println("\t\t\t\t\tExpected: false");
+		System.out.println();
 		System.out.println(
 				"Test 6: wordDict.size() " + wordDict.size());
+		System.out.println("\t\t\t\t\tExpected: 111");
+		System.out.println();
 		System.out.println(
 				"Test 7: isEmpty() " + wordDict.isEmpty());
+		System.out.println("\t\t\t\t\tExpected: false");
+		System.out.println();
 		System.out.println(
 				"Test 8: wordDict.containsValue(Tosit) " + wordDict.containsValue(testObj1));
-		System.out.println("Expected: false");
+		System.out.println("\t\t\t\t\tExpected: false");
+		System.out.println();
 		System.out.println(
 				"Test 9: wordDict.containsValue(tosit) " + wordDict.containsValue(testObj2));
-		System.out.println("Expected: false");
+		System.out.println("\t\t\t\t\tExpected: false");
+		System.out.println();
 		System.out.println(
 				"Test 10: wordDict.containsValue(Tosit) " + wordDict.containsValue(testObj3));
-		System.out.println("Expected: true");
+		System.out.println("\t\t\t\t\tExpected: true");
+		System.out.println();
 		System.out.println(
 				"Test 11: wordDict.containsValue(tosit) " + wordDict.containsValue(testObj4));
-		System.out.println("Expected: false");
+		System.out.println("\t\t\t\t\tExpected: false");
+		System.out.println();
 		//ToDo: more test conditions for the remove methods and the replace method.
 	}
 
@@ -260,7 +275,8 @@ public class TestHashDict {
 		 */
 		@Override
 		public String toString() {
-			return actualWord + " " + wordScore;
+//			return actualWord + " " + wordScore;
+			return actualWord;
 		}
 	}
 }

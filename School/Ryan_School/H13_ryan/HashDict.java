@@ -244,29 +244,6 @@ public class HashDict<K, V> implements IDict<K, V>//, Iterable
 			counter++;
 		}
 		myString.append(" }");
-//		Stream.Builder<String> stringStream = Stream.builder();
-//
-//		stringStream.add("{ ");
-//		HashIter iter = new HashIter();
-//		int counter = 0;
-//		if (iter.hasNext()) {
-//			stringStream.add(String.format("%6s", iter.next()));
-//		}
-//
-//		int returnCarriageAt = 30;
-//		while (iter.hasNext()) {
-//			counter++;
-//			if (counter % returnCarriageAt == 0) {
-//				stringStream.add(",\n " + String.format("%4s", iter.next()));
-//
-//			} else {
-//				stringStream.add(", " + String.format("%4s", iter.next()));
-//			}
-//		}
-//		stringStream.add(" }");
-//		Stream<String> streamString = stringStream.build();
-//
-//		return streamString.reduce("", (n, y) -> n + y);
 		return myString.toString();
 	}
 
@@ -278,7 +255,7 @@ public class HashDict<K, V> implements IDict<K, V>//, Iterable
 		prev = null;
 		curr = theArray[Math.abs(key.hashCode() % cap)];
 		if (curr == null) {
-			curr = theArray[Math.abs(key.hashCode() % cap)] = new HashEntry<>(key, null);
+			curr = theArray[Math.abs(key.hashCode() % cap)] = new HashEntry<>(null, null);
 			return false;
 		} else if (curr.key == null) {
 			return false;
