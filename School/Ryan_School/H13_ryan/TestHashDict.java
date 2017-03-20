@@ -1,6 +1,12 @@
 import java.util.HashMap;
 
-/**
+/**This test file createsa library that uses some of the ideas for letter tiles that
+ *  we've tossed around for the scrable game. By creating dictionaries of the tiles, then
+ *  implementing that tile dictionary in the creation of word dictionaries I think I've managed
+ *  to test most of the put and contains method use conditions.
+ *
+ *  further development should see testing for the .remove(key), .remove(key, value) and
+ *  .replace(key) methods.
  * @author Ryan Peters
  * @date 3/19/2017
  */
@@ -61,7 +67,7 @@ public class TestHashDict {
 				"Test 10: wordDict.containsValue(Tosit)\n" + wordDict.containsValue(testObj3));
 		System.out.println(
 				"Test 11: wordDict.containsValue(tosit)" + wordDict.containsValue(testObj4));
-
+		//ToDo: more test conditions for the remove methods and the replace method.
 	}
 
 
