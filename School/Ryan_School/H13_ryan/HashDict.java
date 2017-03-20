@@ -95,10 +95,17 @@ public class HashDict<K, V> implements IDict<K, V> {
 		if (nodePuter.key.hashCode() == key.hashCode()) {
 			oldVal = nodePuter.value;
 			nodePuter.value = value;
+			return oldVal;
 		} else if (nodePuter != null) {
-			while (nodePuter.next != null) {
+			while (nodePuter.hasNext()) {
 				nodePuter = nodePuter.next;
+				if (nodePuter.getKey().hashCode() == key.hashCode()) {
+					oldVal = nodePuter.value;
+					nodePuter.value = value;
+					return oldVal;
+				}
 			}
+
 			if (nodePuter.value != null) {
 				nodePuter.next = new HashEntry(key, value);
 			} else {

@@ -70,7 +70,8 @@ public class TestHashDict {
 		System.out.println();
 		System.out.println(
 				"Test 6: wordDict.size() -> " + wordDict.size());
-		System.out.println("\t\t\t\t\tExpected: 111");
+		// earlier versions were really wrong here, I wasn't thinking when I made this expectation.
+		System.out.println("\t\t\t\t\tExpected: 12");
 		System.out.println();
 		System.out.println(
 				"Test 7: isEmpty() -> " + wordDict.isEmpty());
