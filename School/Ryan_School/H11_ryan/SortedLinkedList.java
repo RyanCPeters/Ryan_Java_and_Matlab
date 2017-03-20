@@ -122,8 +122,10 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	}
 
 	/**
-	 * As the name implies, this method adds new elements to the back end of the current collection of data.
-	 * This is a private method, and as such it is used under the assumption that the new data set being
+	 * As the name implies, this method adds new elements to the back end of the
+	 * current collection of data.
+	 * This is a private method, and as such it is used under the assumption that
+	 * the new data set being
 	 * added contains only data that is larger than that of the current set.
 	 *
 	 * @param val a single element from the external data set.
@@ -134,8 +136,10 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	}
 
 	/**
-	 * as with the append, the name of this method emplies its use. This method adds data on to the front of the
-	 * current set under the assumption the external data has been vetted to only contain elements smaller than any
+	 * as with the append, the name of this method emplies its use. This method
+	 * adds data on to the front of the
+	 * current set under the assumption the external data has been vetted to only
+	 * contain elements smaller than any
 	 * contained in this set.
 	 *
 	 * @param val a single element from the external data set
@@ -152,40 +156,27 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 	@Override
 	public void addAll(ISortedList<E> other) {
 		if (other.getHead().compareTo(this.getTail()) > 0) {
-//			System.out.println("reached an append state for addAll");
 			for (E elem : other) {
-//				System.out.println(this);
 				append(elem);
-//				System.out.println(this);
 			}
-//			System.out.println("post append condition");
 		} else if (head.next.value.compareTo(other.getTail()) > 0) {
-//			System.out.println("reached a prependInsertion state for addAll\n");
 			anteriorAddHead = new Node(null, HeadOrTail.HEAD);
 			for (E elem : other) {
-//				System.out.println(elem);
-//				System.out.println(this);
 				if (anteriorAddHead.next == null) {
 
 					anteriorAddHead.next = anteriorAddTail = new Node(elem);
 					size++;
 				} else {
-//					System.out.println("about to prependInsertion :D");
 					prepend(elem);
 				}
-//				System.out.println(this);
 			}
-//			System.out.println("post prependInsertion condition\n");
 			anteriorAddTail.next = head.next;
 			head.next = anteriorAddHead.next;
 			anteriorAddHead = anteriorAddTail = null;
 		}else {
-//			System.out.println("entered an insertion add state for addAll");
 			for (E elem : other) {
-//				System.out.println(elem);
 				add(elem);
 			}
-//			System.out.println("post insertaion add condition");
 		}
 	}
 
@@ -290,7 +281,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		return s;
 	}
 
-	/** A custom iterator set up for traversing the nodes in a this sorted single linked list class object.
+	/** A custom iterator set up for traversing the nodes in a this sorted single
+	 *  linked list class object.
 	 *
 	 */
 	private class MyIter implements Iterator<E> {
@@ -357,10 +349,12 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		@Override
 		public E next() throws NoSuchElementException {
 			if (!hasNext()) {
-				throw new NoSuchElementException("there isn't a next node to reference");
+				throw new NoSuchElementException("there isn't a next node to" +
+						" reference");
 			}
 			if(curr.next.next != null && curr.next.next.value == null) {
-				throw new NoSuchElementException("there is a node here, but no data is stored");
+				throw new NoSuchElementException("there is a node here, but no" +
+						" data is stored");
 
 			}else if(curr.next.next == null){
 				return null;
@@ -383,10 +377,13 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		 * method.
 		 *
 		 * @throws UnsupportedOperationException if the {@code remove}
-		 *                                       operation is not supported by this iterator
+		 *                                       operation is not supported by this
+		 *                                       iterator
 		 * @throws IllegalStateException         if the {@code next} method has not
-		 *                                       yet been called, or the {@code remove} method has already
-		 *                                       been called after the last call to the {@code next}
+		 *                                       yet been called, or the {@code
+		 *                                       remove} method has already
+		 *                                       been called after the last call to
+		 *                                       the {@code next}
 		 *                                       method
 		 * @implSpec The default implementation throws an instance of
 		 * {@link UnsupportedOperationException} and performs no other action.
@@ -404,8 +401,9 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 				canRemove = false;
 				size--;
 			} else {
-				throw new IllegalStateException("\n\t\tthe next() method has not yet been called, \n" +
-						"\t\tor the remove() method has already been called after the last call to the next() method");
+				throw new IllegalStateException("\n\t\tthe next() method has not " +
+						"yet been called, \n\t\tor the remove() method has already" +
+						" been called after the last call to the next() method");
 			}
 		}
 
@@ -420,7 +418,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		Node next;
 		HeadOrTail myType = HeadOrTail.MID;
 
-		/** sets the generic value to the given value and the next Node pointer to the given pointer.
+		/** sets the generic value to the given value and the next Node pointer to
+		 *  the given pointer.
 		 *
 		 * @param value a generic comparable object
 		 * @param next a single link list node
@@ -430,7 +429,8 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 			this.next = next;
 		}
 
-		/** sets the generic value to the given value then setns the next Node pointer to be null.
+		/** sets the generic value to the given value then setns the next Node
+		 *  pointer to be null.
 		 *
 		 * @param value a generic comparable object
 		 */
@@ -439,21 +439,25 @@ public class SortedLinkedList<E extends Comparable> implements ISortedList<E>{
 		}
 
 		/**
-		 * Sets both the next Node pointer and the enum HeadOrTail flag to the given parameters then sets the value
+		 * Sets both the next Node pointer and the enum HeadOrTail flag to the
+		 * given parameters then sets the value
 		 * field to be null.
 		 *
 		 * @param next a single link list node
-		 * @param type the enum HeadOrTail flag used to identify the head and tail Nodes in the list.
+		 * @param type the enum HeadOrTail flag used to identify the head and tail
+		 *                   Nodes in the list.
 		 */
 		Node(Node next, HeadOrTail type) {
 			this(null, next);
 			this.myType = type;
 		}
 
-		/** sets the HeadOrTail enum flag to the given parameter, then sets the generic value field along with the
+		/** sets the HeadOrTail enum flag to the given parameter, then sets the
+		 *  generic value field along with the
 		 *  next Node pointer to be null.
 		 *
-		 * @param type the enum HeadOrTail flag used to identify the head and tail Nodes in the list.
+		 * @param type the enum HeadOrTail flag used to identify the head and tail
+		 *             Nodes in the list.
 		 */
 		Node(HeadOrTail type) {
 			this(null, type);

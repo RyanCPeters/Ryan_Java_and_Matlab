@@ -1,6 +1,5 @@
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.stream.Stream;
 
 /**
  * @author Ryan Peters
@@ -10,7 +9,7 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	private static final int DEFAULT_CAP = 16;
 	private int size;
 	private int cap;//bucket capacity for the hash table
-	private HashEntry[] theArray;
+	private HashEntry<K, V>[] theArray;
 	private HashEntry curr;
 	private HashEntry prev;
 
@@ -29,7 +28,7 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	private HashDict(int size, int cap) {
 		this.size = size;
 		this.cap = cap;
-		this.theArray = (HashEntry[]) new Object[cap];
+		this.theArray = (HashEntry<K, V>[]) new HashEntry[cap];
 	}
 
 	/**
@@ -50,7 +49,8 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	}
 
 	/**
-	 * checks if the dictionary contains any key-value pairs, returning true if there are none.
+	 * checks if the dictionary contains any key-value pairs, returning true if there
+	 * are none.
 	 *
 	 * @return true if size of the dictionary is zero, false if >0.
 	 */
@@ -60,34 +60,42 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	}
 
 	/**
-	 * return the value to which the specified key is mapped, or null if this dictionary contains no mapping for the key.
+	 * return the value to which the specified key is mapped, or null if this
+	 * dictionary contains no mapping for the key.
 	 *
-	 * @param key the key to some value that may or may not be in this dictionary, depends upon if key has a mapping.
+	 * @param key the key to some value that may or may not be in this dictionary,
+	 *            depends upon if key has a mapping.
 	 * @return the value associated with this key, or null if key is not mapped.
 	 */
 	@Override
 	public V get(K key) {
-		return (setCurr(key)) ? curr.value : null;
+		return (setCurr(key)) ? (V) curr.value : null;
 	}
 
 	/**
 	 * Associates the given value with the given key in this dictionary.
 	 *
 	 * @param key   the given key for mapping the given value in the dictionary
-	 * @param value the value to be stored at the position the given key will be mapped to.
+	 * @param value the value to be stored at the position the given key will be
+	 *              mapped to.
 	 * @return any value that had been previously mapped to the given key.
 	 */
 	@Override
 	public V put(K key, V value) {
 		V oldVal = null;
 		if (setCurr(key)) {
-			oldVal = curr.value;
+			oldVal = (V) curr.value;
 			curr.value = value;
-		} else {
+		} else if (curr != null) {
 			while (curr.next != null) {
 				curr = curr.next;
 			}
-			curr = new HashEntry(key, value);
+			if (curr.value != null) {
+				curr.next = new HashEntry(key, value);
+			} else {
+				curr.key = key;
+				curr.value = value;
+			}
 		}
 		size++;
 		return oldVal;
@@ -99,7 +107,8 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	 *
 	 * @param key   Is this key supposed to be paired to the
 	 *              new value or the old?
-	 * @param value the given value with which any non-null preexisting value should be replaced.
+	 * @param value the given value with which any non-null preexisting value should
+	 *              be replaced.
 	 * @return returns the previous value associated with the
 	 * specified key, or null if there was no mapping for key.
 	 */
@@ -107,7 +116,7 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	public V replace(K key, V value) {
 		V oldVal = null;
 		if (setCurr(key)) {
-			oldVal = curr.value;
+			oldVal = (V) curr.value;
 			curr.value = value;
 		}
 		return oldVal;
@@ -124,7 +133,7 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	public V remove(K key) {
 		V oldVal = null;
 		if (setCurr(key)) {
-			oldVal = curr.value;
+			oldVal = (V) curr.value;
 			removeCurr();
 
 		}
@@ -133,7 +142,8 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	}
 
 	/**
-	 * Remove from this dictionary thepair whos key is the specified key ONLY if the specified key is currently mapped
+	 * Remove from this dictionary thepair whos key is the specified key ONLY if the
+	 * specified key is currently mapped
 	 * to the specified value.
 	 *
 	 * @param key
@@ -144,7 +154,7 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	public boolean remove(K key, V value) {
 		V oldVal = null;
 		if (setCurr(key) && curr.value == value) {
-			oldVal = curr.value;
+			oldVal = (V) curr.value;
 			removeCurr();
 			size--;
 		}
@@ -214,39 +224,60 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	 */
 	@Override
 	public String toString() {
-		Stream.Builder<String> stringStream = Stream.builder();
+		int idx = 0;
+		curr = theArray[idx];
+		String myString = "{ ";
+		if (curr.value != null) myString += curr.value;
+		while (idx + 1 < theArray.length && idx > -1) {
 
-		stringStream.add("{ ");
-		HashIter iter = new HashIter();
-		int counter = 0;
-		if (iter.hasNext()) {
-			stringStream.add(String.format("%6s", iter.next()));
-		}
-		// returnCarriageAt is the point in the string we should insert a new line return. This will happen when line
-		// length is  10 < size/3 < 30
-//		int returnCarriageAt = ((size / 3) < 10) ? 10 : ( size / 3)>30 ? (size / 3) : 30;
-		int returnCarriageAt = 30;
-		while (iter.hasNext()) {
-			counter++;
-			if (counter % returnCarriageAt == 0) {
-				stringStream.add(",\n " + String.format("%4s", iter.next()));
-
+			if (curr.hasNext()) {
+				curr = curr.next;
 			} else {
-				stringStream.add(", " + String.format("%4s", iter.next()));
+				curr = theArray[++idx];
 			}
+			if (curr != null && curr.value != null) myString += ", " + curr.value;
+			else idx = -1;
 		}
-		stringStream.add(" }");
-		Stream<String> streamString = stringStream.build();
-
-		return streamString.reduce("", (n, y) -> n + y);
+		myString += " }";
+//		Stream.Builder<String> stringStream = Stream.builder();
+//
+//		stringStream.add("{ ");
+//		HashIter iter = new HashIter();
+//		int counter = 0;
+//		if (iter.hasNext()) {
+//			stringStream.add(String.format("%6s", iter.next()));
+//		}
+//
+//		int returnCarriageAt = 30;
+//		while (iter.hasNext()) {
+//			counter++;
+//			if (counter % returnCarriageAt == 0) {
+//				stringStream.add(",\n " + String.format("%4s", iter.next()));
+//
+//			} else {
+//				stringStream.add(", " + String.format("%4s", iter.next()));
+//			}
+//		}
+//		stringStream.add(" }");
+//		Stream<String> streamString = stringStream.build();
+//
+//		return streamString.reduce("", (n, y) -> n + y);
+		return myString;
 	}
 
-	/*this private helper method takes a key value and maps it to it's rightful position in the dictionary, and then
-		 * it returns a boolean according to if there was a pre-existing mapping to that same position.
-		 */
+	/*this private helper method takes a key value and maps it to it's rightful
+	 *position in the dictionary, and then it returns a boolean according to if
+	 *there was a pre-existing mapping to that same position.
+	 */
 	private boolean setCurr(K key) {
 		prev = null;
 		curr = theArray[Math.abs(key.hashCode() % cap)];
+		if (curr == null) {
+			curr = theArray[Math.abs(key.hashCode() % cap)] = new HashEntry<>(key, null);
+			return false;
+		} else if (curr.key == null) {
+			return false;
+		}
 		boolean preMapped = (curr.key == key);
 		while (!preMapped && curr.next != null) {
 			prev = curr;
@@ -257,7 +288,8 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 		return preMapped;
 	}
 
-	/* this private method is set up under the assumption that it will only be called after setCurr() has run.
+	/* this private method is set up under the assumption that it will only be called
+	 * after setCurr() has run.
 	 */
 	private void removeCurr() {
 		if (prev != null) {
@@ -283,18 +315,19 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	}
 
 	/**
-	 * The private inner class responsible for tracking the mapping of values and their key within the hash table.
+	 * The private inner class responsible for tracking the mapping of values and
+	 * their key within the hash table.
 	 */
-	private class HashEntry {
-		private K key;
-		private V value;
+	private class HashEntry<k, v> {
+		private k key;
+		private v value;
 		private HashEntry next;
 
 		/**
 		 * @param key
 		 * @param value
 		 */
-		protected HashEntry(K key, V value) {
+		protected HashEntry(k key, v value) {
 			this.key = key;
 			this.value = value;
 			next = null;
@@ -341,7 +374,8 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 		 */
 		@Override
 		public V next() {
-			if (!hasNext()) throw new NoSuchElementException("the iterator has reached the end dictionary");
+			if (!hasNext()) throw new NoSuchElementException("the iterator has" +
+					" reached the end of the dictionary");
 			if (idx == -1) {
 				targetEntry = theArray[++idx];
 
@@ -352,9 +386,10 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 					targetEntry = theArray[++idx];
 				}
 			}
-			if (targetEntry.value == null)
-				throw new NoSuchElementException("there was no data value saved for this entry");
-			return targetEntry.value;
+			if (targetEntry == null || targetEntry.value == null)
+				throw new NoSuchElementException("there was no data value saved for" +
+						" this entry");
+			return (V) targetEntry.value;
 		}
 	}
 }
