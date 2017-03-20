@@ -7,8 +7,6 @@ public class HashDict<K, V> implements IDict<K, V> {
 	private int size;
 	private int cap;//bucket capacity for the hash table
 	private HashEntry<K, V>[] theArray;
-	private HashEntry curr;
-	private HashEntry prev;
 
 	/**
 	 *
@@ -65,8 +63,13 @@ public class HashDict<K, V> implements IDict<K, V> {
 	 * @return the value associated with this key, or null if key is not mapped.
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public V get(K key) {
-		return (setCurr(key)) ? (V) curr.value : null;
+		HashEntry<V, K> nodeGetter = (HashEntry<V, K>) setCurr(key);
+		if (nodeGetter.getKey() == key) {
+			return (V) nodeGetter.value;
+		}
+		return null;
 	}
 
 	/**
@@ -78,21 +81,25 @@ public class HashDict<K, V> implements IDict<K, V> {
 	 * @return any value that had been previously mapped to the given key.
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public V put(K key, V value) {
+		HashEntry<K, V> nodePuter = theArray[Math.abs(key.hashCode()) % cap];
 		V oldVal = null;
-		if (setCurr(key)) {
-			oldVal = (V) curr.value;
-			curr.value = value;
-		} else if (curr != null) {
-			while (curr.next != null) {
-				curr = curr.next;
+		if (nodePuter.key.hashCode() == key.hashCode()) {
+			oldVal = nodePuter.value;
+			nodePuter.value = value;
+		} else if (nodePuter != null) {
+			while (nodePuter.next != null) {
+				nodePuter = nodePuter.next;
 			}
-			if (curr.value != null) {
-				curr.next = new HashEntry(key, value);
+			if (nodePuter.value != null) {
+				nodePuter.next = new HashEntry(key, value);
 			} else {
-				curr.key = key;
-				curr.value = value;
+				nodePuter.key = key;
+				nodePuter.value = value;
 			}
+		} else {
+			theArray[Math.abs(key.hashCode()) % cap] = new HashEntry<>(key, value);
 		}
 		size++;
 		return oldVal;
@@ -111,10 +118,20 @@ public class HashDict<K, V> implements IDict<K, V> {
 	 */
 	@Override
 	public V replace(K key, V value) {
+		HashEntry<K, V> nodePuter = theArray[Math.abs(key.hashCode()) % cap];
 		V oldVal = null;
-		if (setCurr(key)) {
-			oldVal = (V) curr.value;
-			curr.value = value;
+
+		if (nodePuter.key.hashCode() == key.hashCode()) {
+			oldVal = nodePuter.value;
+			nodePuter.value = value;
+		} else {
+			while (nodePuter.key.hashCode() != key.hashCode() && nodePuter.hasNext()) {
+				nodePuter = nodePuter.next;
+			}
+			if (nodePuter.key.hashCode() == key.hashCode()) {
+				oldVal = nodePuter.value;
+				nodePuter.value = value;
+			}
 		}
 		return oldVal;
 	}
@@ -130,7 +147,7 @@ public class HashDict<K, V> implements IDict<K, V> {
 	public V remove(K key) {
 		V oldVal = null;
 		if (setCurr(key)) {
-			oldVal = (V) curr.value;
+			oldVal = curr.value;
 			removeCurr();
 
 		}
@@ -151,7 +168,7 @@ public class HashDict<K, V> implements IDict<K, V> {
 	public boolean remove(K key, V value) {
 		V oldVal = null;
 		if (setCurr(key) && curr.value == value) {
-			oldVal = (V) curr.value;
+			oldVal = curr.value;
 			removeCurr();
 			size--;
 		}
@@ -165,8 +182,14 @@ public class HashDict<K, V> implements IDict<K, V> {
 	 * @return
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public boolean containsKey(K key) {
-		return setCurr(key);
+		HashEntry<K, V> keyFinder = theArray[Math.abs(key.hashCode()) % cap];
+		if (keyFinder == null) return false;
+		while (keyFinder.key.hashCode() != key.hashCode() && keyFinder.hasNext()) {
+			keyFinder = keyFinder.next;
+		}
+		return keyFinder.key.hashCode() == key.hashCode();
 	}
 
 	/**
@@ -250,23 +273,25 @@ public class HashDict<K, V> implements IDict<K, V> {
 	 *position in the dictionary, and then it returns a boolean according to if
 	 *there was a pre-existing mapping to that same position.
 	 */
-	private boolean setCurr(K key) {
-		prev = null;
+	private HashEntry<K, V> setCurr(K key) {
 		curr = theArray[Math.abs(key.hashCode() % cap)];
-		if (curr == null) {
-			curr = theArray[Math.abs(key.hashCode() % cap)] = new HashEntry<>(null, null);
+		if (null == curr) {
+			curr = theArray[Math.abs(key.hashCode() % cap)] = new HashEntry<>();
 			return false;
-		} else if (curr.key == null) {
-			return false;
-		}
-		boolean preMapped = (curr.key == key);
-		while (!preMapped && curr.next != null) {
-			prev = curr;
-			curr = curr.next;
-			preMapped = (curr.key == key);
 		}
 
+		if (null == curr.getKey()) {
+			return false;
+		}
+		prev = null;
+		boolean preMapped = (curr.getKey().hashCode() == key.hashCode());
+		while (!preMapped && curr.hasNext()) {
+			prev = curr;
+			curr = curr.next;
+			preMapped = (curr.getKey().hashCode() == key.hashCode());
+		}
 		return preMapped;
+
 	}
 
 	/* this private method is set up under the assumption that it will only be called
@@ -276,7 +301,7 @@ public class HashDict<K, V> implements IDict<K, V> {
 		if (prev != null) {
 			prev.next = curr.next;
 		} else if (curr.hasNext()) {
-			curr.value = curr.next.value;
+			curr.value = (V) curr.next.value;
 			if (curr.next.hasNext()) {
 				curr.next = curr.next.next;
 			} else {
@@ -309,8 +334,25 @@ public class HashDict<K, V> implements IDict<K, V> {
 			this(null, null);
 		}
 
+		private HashEntry(HashEntry next) {
+			this.key = null;
+			this.value = null;
+			this.next = next;
+		}
 		private boolean hasNext() {
 			return curr.next != null;
+		}
+
+		private boolean emptyEntry() {
+			return key == null || value == null;
+		}
+
+		private k getKey() {
+			return key;
+		}
+
+		private v getVal() {
+			return value;
 		}
 	}
 }
