@@ -1,11 +1,9 @@
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 /**
  * @author Ryan Peters
  * @date 3/17/2017
  */
-public class HashDict<K, V> implements IDict<K, V>, Iterable {
+public class HashDict<K, V> implements IDict<K, V>//, Iterable
+{
 	private static final int DEFAULT_CAP = 16;
 	private int size;
 	private int cap;//bucket capacity for the hash table
@@ -225,20 +223,27 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 	@Override
 	public String toString() {
 		int idx = 0;
+		while (theArray[idx] == null && idx < theArray.length) idx++;
+		if (idx >= theArray.length) return "{ }";
 		curr = theArray[idx];
-		String myString = "{ ";
-		if (curr.value != null) myString += curr.value;
+		StringBuilder myString = new StringBuilder("{ ");
+		if (curr.value != null) myString.append(curr.value);
+		int counter = 1;
 		while (idx + 1 < theArray.length && idx > -1) {
-
+			if (counter % 15 == 0) myString.append("\n");
 			if (curr.hasNext()) {
 				curr = curr.next;
 			} else {
-				curr = theArray[++idx];
+				idx++;
+				while (theArray[idx] == null && idx < theArray.length) idx++;
+				if (idx >= theArray.length) return myString + " }";
+				curr = theArray[idx];
 			}
-			if (curr != null && curr.value != null) myString += ", " + curr.value;
+			if (curr != null && curr.value != null) myString.append(", " + curr.value);
 			else idx = -1;
+			counter++;
 		}
-		myString += " }";
+		myString.append(" }");
 //		Stream.Builder<String> stringStream = Stream.builder();
 //
 //		stringStream.add("{ ");
@@ -262,7 +267,7 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 //		Stream<String> streamString = stringStream.build();
 //
 //		return streamString.reduce("", (n, y) -> n + y);
-		return myString;
+		return myString.toString();
 	}
 
 	/*this private helper method takes a key value and maps it to it's rightful
@@ -304,15 +309,15 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 		}
 	}
 
-	/**
-	 * Returns an iterator over elements of type {@code T}.
-	 *
-	 * @return an Iterator.
-	 */
-	@Override
-	public Iterator iterator() {
-		return new HashIter();
-	}
+//	/**
+//	 * Returns an iterator over elements of type {@code T}.
+//	 *
+//	 * @return an Iterator.
+//	 */
+//	@Override
+//	public Iterator iterator() {
+//		return new HashIter();
+//	}
 
 	/**
 	 * The private inner class responsible for tracking the mapping of values and
@@ -342,54 +347,54 @@ public class HashDict<K, V> implements IDict<K, V>, Iterable {
 		}
 	}
 
-	private class HashIter implements Iterator {
-		private int pos;
-		private int idx;
-		private HashEntry targetEntry;
-
-		HashIter() {
-			// just to clearly spell it out that we start as nulls :)
-			targetEntry = null;
-
-			idx = pos = -1;
-		}
-
-		/**
-		 * Returns {@code true} if the iteration has more elements.
-		 * (In other words, returns {@code true} if {@link #next} would
-		 * return an element rather than throwing an exception.)
-		 *
-		 * @return {@code true} if the iteration has more elements
-		 */
-		@Override
-		public boolean hasNext() {
-			return pos + 1 < size;
-		}
-
-		/**
-		 * Returns the next element in the iteration.
-		 *
-		 * @return the next element in the iteration
-		 * @throws NoSuchElementException if the iteration has no more elements
-		 */
-		@Override
-		public V next() {
-			if (!hasNext()) throw new NoSuchElementException("the iterator has" +
-					" reached the end of the dictionary");
-			if (idx == -1) {
-				targetEntry = theArray[++idx];
-
-			} else {
-				if (targetEntry.hasNext()) {
-					targetEntry = targetEntry.next;
-				} else if (idx + 1 < theArray.length) {
-					targetEntry = theArray[++idx];
-				}
-			}
-			if (targetEntry == null || targetEntry.value == null)
-				throw new NoSuchElementException("there was no data value saved for" +
-						" this entry");
-			return (V) targetEntry.value;
-		}
-	}
+//	private class HashIter implements Iterator {
+//		private int pos;
+//		private int idx;
+//		private HashEntry targetEntry;
+//
+//		HashIter() {
+//			// just to clearly spell it out that we start as nulls :)
+//			targetEntry = null;
+//
+//			idx = pos = -1;
+//		}
+//
+//		/**
+//		 * Returns {@code true} if the iteration has more elements.
+//		 * (In other words, returns {@code true} if {@link #next} would
+//		 * return an element rather than throwing an exception.)
+//		 *
+//		 * @return {@code true} if the iteration has more elements
+//		 */
+//		@Override
+//		public boolean hasNext() {
+//			return pos + 1 < size;
+//		}
+//
+//		/**
+//		 * Returns the next element in the iteration.
+//		 *
+//		 * @return the next element in the iteration
+//		 * @throws NoSuchElementException if the iteration has no more elements
+//		 */
+//		@Override
+//		public V next() {
+//			if (!hasNext()) throw new NoSuchElementException("the iterator has" +
+//					" reached the end of the dictionary");
+//			if (idx == -1) {
+//				targetEntry = theArray[++idx];
+//
+//			} else {
+//				if (targetEntry.hasNext()) {
+//					targetEntry = targetEntry.next;
+//				} else if (idx + 1 < theArray.length) {
+//					targetEntry = theArray[++idx];
+//				}
+//			}
+//			if (targetEntry == null || targetEntry.value == null)
+//				throw new NoSuchElementException("there was no data value saved for" +
+//						" this entry");
+//			return (V) targetEntry.value;
+//		}
+//	}
 }

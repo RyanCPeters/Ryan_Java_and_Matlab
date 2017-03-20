@@ -41,6 +41,8 @@ public class TestHashDict {
 		for (String elem : strArraySpaceSplit) {
 			setUpWordDict(elem);
 		}
+		System.out.println("the contents of strArraySpaceSplit are:\n");
+		for (String s : strArraySpaceSplit) System.out.println(s);
 		ScrabWord testObj1 = new ScrabWord("Tosit");
 		ScrabWord testObj2 = new ScrabWord("tosit");
 		ScrabWord testObj3 = new ScrabWord("chippy");
@@ -52,17 +54,17 @@ public class TestHashDict {
 		System.out.println(
 				"Test 3: wordDict.containsKey(tosit)\n" + wordDict.containsKey("tosit"));
 		System.out.println(
-				"Test 4: wordDict.containsValue(Tosit)\n" + wordDict.containsKey("chippy"));
+				"Test 4: wordDict.containsKey(Tosit)\n" + wordDict.containsKey("chippy"));
 		System.out.println(
-				"Test 5: wordDict.containsValue(tosit)" + wordDict.containsKey("Chippy"));
+				"Test 5: wordDict.containsKey(tosit)" + wordDict.containsKey("Chippy"));
 		System.out.println(
 				"Test 6: wordDict.size()" + wordDict.size());
 		System.out.println(
 				"Test 7: isEmpty()" + wordDict.isEmpty());
 		System.out.println(
-				"Test 8: wordDict.containsKey(Tosit)\n" + wordDict.containsValue(testObj1));
+				"Test 8: wordDict.containsValue(Tosit)\n" + wordDict.containsValue(testObj1));
 		System.out.println(
-				"Test 9: wordDict.containsKey(tosit)\n" + wordDict.containsValue(testObj2));
+				"Test 9: wordDict.containsValue(tosit)\n" + wordDict.containsValue(testObj2));
 		System.out.println(
 				"Test 10: wordDict.containsValue(Tosit)\n" + wordDict.containsValue(testObj3));
 		System.out.println(
@@ -227,5 +229,30 @@ public class TestHashDict {
 			}
 		}
 
+		/**
+		 * Returns a string representation of the object. In general, the
+		 * {@code toString} method returns a string that
+		 * "textually represents" this object. The result should
+		 * be a concise but informative representation that is easy for a
+		 * person to read.
+		 * It is recommended that all subclasses override this method.
+		 * <p>
+		 * The {@code toString} method for class {@code Object}
+		 * returns a string consisting of the name of the class of which the
+		 * object is an instance, the at-sign character `{@code @}', and
+		 * the unsigned hexadecimal representation of the hash code of the
+		 * object. In other words, this method returns a string equal to the
+		 * value of:
+		 * <blockquote>
+		 * <pre>
+		 * getClass().getName() + '@' + Integer.toHexString(hashCode())
+		 * </pre></blockquote>
+		 *
+		 * @return a string representation of the object.
+		 */
+		@Override
+		public String toString() {
+			return actualWord + " " + wordScore;
+		}
 	}
 }
