@@ -381,7 +381,12 @@ public class TestHashDict {
 		 */
 		@Override
 		public boolean equals(Object obj) {
-			return obj instanceof String && actualWord.equals(obj);
+
+			if (obj instanceof ScrabWord) {
+				if (actualWord.equals(((ScrabWord) obj).actualWord)) ;
+				return true;
+			}
+			return obj instanceof String && actualWord == obj;
 		}
 	}
 }

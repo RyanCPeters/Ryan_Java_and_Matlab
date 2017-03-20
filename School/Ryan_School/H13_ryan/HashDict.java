@@ -242,13 +242,16 @@ public class HashDict<K, V> implements IDict<K, V> {
 	public boolean containsValue(V value) {
 		HashEntry valFinder;
 		boolean contained = false;
-		for (int i = 0; i < theArray.length && !contained; i++) {
+		for (int i = 0; i < theArray.length; i++) {
 			valFinder = theArray[i];
 			if (valFinder != null) {
 				contained = (valFinder.value == value);
 				while (valFinder.hasNext() && !contained) {
 					valFinder = valFinder.next;
-					contained = (valFinder.value == value);
+					if (valFinder.value.equals(value)) {
+						contained = true;
+						i = theArray.length + 1;
+					}
 				}
 			}
 		}
