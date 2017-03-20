@@ -50,25 +50,33 @@ public class TestHashDict {
 		System.out.println(
 				"Test 1: wordDict.toString()\n" + wordDict);
 		System.out.println(
-				"Test 2: wordDict.containsKey(Tosit)\n" + wordDict.containsKey("Tosit"));
+				"Test 2: wordDict.containsKey(Tosit) " + wordDict.containsKey("Tosit"));
+		System.out.println("Expected: false");
 		System.out.println(
-				"Test 3: wordDict.containsKey(tosit)\n" + wordDict.containsKey("tosit"));
+				"Test 3: wordDict.containsKey(tosit) " + wordDict.containsKey("tosit"));
+		System.out.println("Expected: false");
 		System.out.println(
-				"Test 4: wordDict.containsKey(Tosit)\n" + wordDict.containsKey("chippy"));
+				"Test 4: wordDict.containsKey(Tosit) " + wordDict.containsKey("chippy"));
+		System.out.println("Expected: true");
 		System.out.println(
-				"Test 5: wordDict.containsKey(tosit)" + wordDict.containsKey("Chippy"));
+				"Test 5: wordDict.containsKey(tosit) " + wordDict.containsKey("Chippy"));
+		System.out.println("Expected: false");
 		System.out.println(
-				"Test 6: wordDict.size()" + wordDict.size());
+				"Test 6: wordDict.size() " + wordDict.size());
 		System.out.println(
-				"Test 7: isEmpty()" + wordDict.isEmpty());
+				"Test 7: isEmpty() " + wordDict.isEmpty());
 		System.out.println(
-				"Test 8: wordDict.containsValue(Tosit)\n" + wordDict.containsValue(testObj1));
+				"Test 8: wordDict.containsValue(Tosit) " + wordDict.containsValue(testObj1));
+		System.out.println("Expected: false");
 		System.out.println(
-				"Test 9: wordDict.containsValue(tosit)\n" + wordDict.containsValue(testObj2));
+				"Test 9: wordDict.containsValue(tosit) " + wordDict.containsValue(testObj2));
+		System.out.println("Expected: false");
 		System.out.println(
-				"Test 10: wordDict.containsValue(Tosit)\n" + wordDict.containsValue(testObj3));
+				"Test 10: wordDict.containsValue(Tosit) " + wordDict.containsValue(testObj3));
+		System.out.println("Expected: true");
 		System.out.println(
-				"Test 11: wordDict.containsValue(tosit)" + wordDict.containsValue(testObj4));
+				"Test 11: wordDict.containsValue(tosit) " + wordDict.containsValue(testObj4));
+		System.out.println("Expected: false");
 		//ToDo: more test conditions for the remove methods and the replace method.
 	}
 

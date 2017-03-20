@@ -179,9 +179,9 @@ public class HashDict<K, V> implements IDict<K, V>//, Iterable
 	@Override
 	public boolean containsValue(V value) {
 		boolean contained = false;
-		for (int i = 0; i < size && !contained; i++) {
+		for (int i = 0; i < theArray.length && !contained; i++) {
 			curr = theArray[i];
-			while (curr.hasNext() && !contained) {
+			while (curr != null && curr.hasNext() && !contained) {
 				contained = (curr.value == value);
 				curr = curr.next;
 			}
