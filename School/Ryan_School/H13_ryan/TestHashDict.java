@@ -9,11 +9,12 @@ public class TestHashDict {
 	static HashDict<String, ScrabWord> wordDict;
 
 	public static void main(String[] args) {
-		tileDict = new HashDict<>(26);
+		tileDict = new HashDict<>(31);
 
 
 		/* a string that will be split into an array of strings and each word will have
-		 * its "scrabble" score calculated and that score will be it's hash key*/
+		 * its "scrabble" score calculated and that score will be the "value" in each HashEntry
+		 * while the word itself is the key*/
 		String demoString = "To sit in solemn silence in a dull, dark dock, " +
 				"In a pestilential prison, with a life-long lock, " +
 				"Awaiting the sensation of a short, sharp shock," +
@@ -66,15 +67,22 @@ public class TestHashDict {
 
 	private static void setUpTileDict() {
 		Character[] lettersChar = {
+				'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i',
+				'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r',
+				's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 				'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
 				'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R',
-				'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '?'};
+				'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '?', '!', '-', ',', '.'};
 		Integer[] lettersCounts = {
 				9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2,
-				6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1, 2};
+				6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1,
+				9, 2, 2, 4, 12, 2, 3, 2, 9, 1, 1, 4, 2,
+				6, 8, 2, 1, 6, 4, 6, 4, 2, 2, 1, 2, 1, 2, 0, 0, 0, 0};
 		Integer[] lettersValue = {
 				1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1,
-				1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10, 0};
+				1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10,
+				1, 3, 3, 2, 1, 4, 2, 4, 1, 8, 5, 1, 3, 1,
+				1, 3, 10, 1, 1, 1, 1, 4, 4, 8, 4, 10, 0, 0, 0, 0, 0};
 		ScrabTile tileIntoDict;
 		for (int i = 0; i < lettersChar.length; i++) {
 			tileIntoDict = new ScrabTile(
