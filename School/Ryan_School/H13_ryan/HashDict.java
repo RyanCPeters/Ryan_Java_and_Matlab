@@ -198,7 +198,10 @@ public class HashDict<K, V> implements IDict<K, V> {
 		HashEntry setUpRemove = theArray[Math.abs(key.hashCode()) % cap];
 		if (setUpRemove != null) {
 
-			while (setUpRemove.getKey().hashCode() != key.hashCode() && setUpRemove.value != value && setUpRemove.hasNext()) {
+			while (setUpRemove.getKey().hashCode() != key.hashCode()
+					&& setUpRemove.value != value
+					&& setUpRemove.hasNext()) {
+
 				prev = setUpRemove;
 				setUpRemove = setUpRemove.next;
 			}
@@ -264,7 +267,8 @@ public class HashDict<K, V> implements IDict<K, V> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public void clear() {
-		this.theArray = (HashEntry[]) new Object[cap];
+		this.theArray = null;
+		this.theArray = (HashEntry<K, V>[]) new HashEntry[cap];
 		size = 0;
 	}
 
@@ -291,12 +295,13 @@ public class HashDict<K, V> implements IDict<K, V> {
 	 */
 	@Override
 	public String toString() {
+		StringBuilder myString = new StringBuilder("{ ");
+		if (size == 0) return "{}";
 		HashEntry hashStringer;
 		int idx = 0;
 		while (theArray[idx] == null && idx < theArray.length) idx++;
 		if (idx >= theArray.length) return "{ }";
 		hashStringer = theArray[idx];
-		StringBuilder myString = new StringBuilder("{ ");
 		if (hashStringer.value != null) myString.append(hashStringer.value);
 		int counter = 1;
 		while (idx + 1 < theArray.length && idx > -1) {

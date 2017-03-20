@@ -102,9 +102,17 @@ public class TestHashDict {
 		System.out.println("\t\t\t\t\tExpected: chippy (that's testObj3)");
 		System.out.println();
 		System.out.println(
+				"Test 13.5: wordDict.put(testObj3) -> " + wordDict.put(testObj3.actualWord, testObj3));
+		System.out.println("\t\t\t\t\tExpected: null");
+		System.out.println();
+		System.out.println(
 				"Test 14: wordDict.remove(chippy, testObj3) -> " + wordDict.remove("chippy", testObj3));
 		System.out.println("\t\t\t\t\tExpected: true");
 		System.out.println();
+		System.out.println(
+				"Test 15: wordDict.clear() -> should be nothing");
+		wordDict.clear();
+		System.out.println(wordDict);
 		//ToDo: more test conditions for the remove methods and the replace method.
 	}
 
