@@ -65,7 +65,10 @@ public class HashDict<K, V> implements IDict<K, V> {
 	@Override
 	@SuppressWarnings("unchecked")
 	public V get(K key) {
-		HashEntry<V, K> nodeGetter = (HashEntry<V, K>) setCurr(key);
+		HashEntry nodeGetter = theArray[Math.abs(key.hashCode()) % cap];
+		while (nodeGetter.getKey().hashCode() != key.hashCode() && nodeGetter.hasNext()) {
+			nodeGetter = nodeGetter.next;
+		}
 		if (nodeGetter.getKey() == key) {
 			return (V) nodeGetter.value;
 		}
@@ -85,6 +88,10 @@ public class HashDict<K, V> implements IDict<K, V> {
 	public V put(K key, V value) {
 		HashEntry<K, V> nodePuter = theArray[Math.abs(key.hashCode()) % cap];
 		V oldVal = null;
+		if (nodePuter == null) {
+			theArray[Math.abs(key.hashCode()) % cap] = new HashEntry<>(key, value);
+			return oldVal;
+		}
 		if (nodePuter.key.hashCode() == key.hashCode()) {
 			oldVal = nodePuter.value;
 			nodePuter.value = value;
@@ -146,10 +153,23 @@ public class HashDict<K, V> implements IDict<K, V> {
 	@Override
 	public V remove(K key) {
 		V oldVal = null;
-		if (setCurr(key)) {
-			oldVal = curr.value;
-			removeCurr();
+		HashEntry<V, K> prev = null;
+		HashEntry setUpRemove = theArray[Math.abs(key.hashCode()) % cap];
+		if (setUpRemove != null) {
 
+			while (setUpRemove.getKey().hashCode() != key.hashCode() && setUpRemove.hasNext()) {
+				prev = setUpRemove;
+				setUpRemove = setUpRemove.next;
+			}
+			if (setUpRemove.getKey().hashCode() != key.hashCode()) return oldVal;
+			oldVal = (V) setUpRemove.value;
+			if (prev != null) {
+				prev.next = setUpRemove.next;
+			} else {
+				theArray[Math.abs(key.hashCode()) % cap] = null;
+			}
+		} else {
+			return oldVal;
 		}
 		size--;
 		return oldVal;
@@ -167,11 +187,24 @@ public class HashDict<K, V> implements IDict<K, V> {
 	@Override
 	public boolean remove(K key, V value) {
 		V oldVal = null;
-		if (setCurr(key) && curr.value == value) {
-			oldVal = curr.value;
-			removeCurr();
-			size--;
+		HashEntry<V, K> prev = null;
+		HashEntry setUpRemove = theArray[Math.abs(key.hashCode()) % cap];
+		if (setUpRemove != null) {
+
+			while (setUpRemove.getKey().hashCode() != key.hashCode() && setUpRemove.value != value && setUpRemove.hasNext()) {
+				prev = setUpRemove;
+				setUpRemove = setUpRemove.next;
+			}
+			if (setUpRemove.getKey().hashCode() != key.hashCode()) return false;
+			if (setUpRemove.value != value) return false;
+			oldVal = (V) setUpRemove.value;
+			if (prev != null) {
+				prev.next = setUpRemove.next;
+			} else {
+				theArray[Math.abs(key.hashCode()) % cap] = null;
+			}
 		}
+		size--;
 		return oldVal != null;
 	}
 
@@ -200,12 +233,16 @@ public class HashDict<K, V> implements IDict<K, V> {
 	 */
 	@Override
 	public boolean containsValue(V value) {
+		HashEntry valFinder;
 		boolean contained = false;
 		for (int i = 0; i < theArray.length && !contained; i++) {
-			curr = theArray[i];
-			while (curr != null && curr.hasNext() && !contained) {
-				contained = (curr.value == value);
-				curr = curr.next;
+			valFinder = theArray[i];
+			if (valFinder != null) {
+				contained = (valFinder.value == value);
+				while (valFinder.hasNext() && !contained) {
+					valFinder = valFinder.next;
+					contained = (valFinder.value == value);
+				}
 			}
 		}
 		return contained;
@@ -244,72 +281,31 @@ public class HashDict<K, V> implements IDict<K, V> {
 	 */
 	@Override
 	public String toString() {
+		HashEntry hashStringer;
 		int idx = 0;
 		while (theArray[idx] == null && idx < theArray.length) idx++;
 		if (idx >= theArray.length) return "{ }";
-		curr = theArray[idx];
+		hashStringer = theArray[idx];
 		StringBuilder myString = new StringBuilder("{ ");
-		if (curr.value != null) myString.append(curr.value);
+		if (hashStringer.value != null) myString.append(hashStringer.value);
 		int counter = 1;
 		while (idx + 1 < theArray.length && idx > -1) {
 			if (counter % 15 == 0) myString.append("\n");
-			if (curr.hasNext()) {
-				curr = curr.next;
+			if (hashStringer.hasNext()) {
+				hashStringer = hashStringer.next;
 			} else {
 				idx++;
 				while (theArray[idx] == null && idx < theArray.length) idx++;
 				if (idx >= theArray.length) return myString + " }";
-				curr = theArray[idx];
+				hashStringer = theArray[idx];
 			}
-			if (curr != null && curr.value != null) myString.append(", " + curr.value);
+			if (hashStringer != null && hashStringer.value != null) myString.append(", " + hashStringer.value);
 			else idx = -1;
 			counter++;
 		}
 		myString.append(" }");
 		return myString.toString();
 	}
-
-	/*this private helper method takes a key value and maps it to it's rightful
-	 *position in the dictionary, and then it returns a boolean according to if
-	 *there was a pre-existing mapping to that same position.
-	 */
-	private HashEntry<K, V> setCurr(K key) {
-		curr = theArray[Math.abs(key.hashCode() % cap)];
-		if (null == curr) {
-			curr = theArray[Math.abs(key.hashCode() % cap)] = new HashEntry<>();
-			return false;
-		}
-
-		if (null == curr.getKey()) {
-			return false;
-		}
-		prev = null;
-		boolean preMapped = (curr.getKey().hashCode() == key.hashCode());
-		while (!preMapped && curr.hasNext()) {
-			prev = curr;
-			curr = curr.next;
-			preMapped = (curr.getKey().hashCode() == key.hashCode());
-		}
-		return preMapped;
-
-	}
-
-	/* this private method is set up under the assumption that it will only be called
-	 * after setCurr() has run.
-	 */
-	private void removeCurr() {
-		if (prev != null) {
-			prev.next = curr.next;
-		} else if (curr.hasNext()) {
-			curr.value = (V) curr.next.value;
-			if (curr.next.hasNext()) {
-				curr.next = curr.next.next;
-			} else {
-				curr.next = null;
-			}
-		}
-	}
-
 
 	/**
 	 * The private inner class responsible for tracking the mapping of values and
@@ -340,7 +336,7 @@ public class HashDict<K, V> implements IDict<K, V> {
 			this.next = next;
 		}
 		private boolean hasNext() {
-			return curr.next != null;
+			return next != null;
 		}
 
 		private boolean emptyEntry() {

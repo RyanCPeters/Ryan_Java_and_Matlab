@@ -96,6 +96,14 @@ public class TestHashDict {
 				"Test 12: wordDict.get(chippy) -> " + wordDict.get("chippy"));
 		System.out.println("\t\t\t\t\tExpected: chippy");
 		System.out.println();
+		System.out.println(
+				"Test 13: wordDict.remove(chippy) -> " + wordDict.remove("chippy"));
+		System.out.println("\t\t\t\t\tExpected: chippy (that's testObj3)");
+		System.out.println();
+		System.out.println(
+				"Test 14: wordDict.remove(chippy, testObj3) -> " + wordDict.remove("chippy", testObj3));
+		System.out.println("\t\t\t\t\tExpected: true");
+		System.out.println();
 		//ToDo: more test conditions for the remove methods and the replace method.
 	}
 
@@ -251,7 +259,8 @@ public class TestHashDict {
 			theLetters = new ScrabTile[actualWord.length()];
 			wordScore = 0;
 			for (int j = 0; j < actualWord.length(); j++) {
-				theLetters[j] = tileDict.get(actualWord.charAt(j));
+				ScrabTile tmp = tileDict.get(actualWord.charAt(j));
+				theLetters[j] = tmp;
 				wordScore += theLetters[j].pointVal;
 			}
 		}
