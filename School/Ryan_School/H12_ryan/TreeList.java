@@ -125,6 +125,7 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 			if (value.equals(iter.next())) targetNotFound = false;
 			if (targetNotFound) pos++;
 		}
+		if (pos == size) return -1;
 		return pos;
 	}
 
@@ -297,6 +298,9 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 			// this is checking if sacNode is the right side node of it's parent.
 			if (targetIsRightTrue) sacNodeParent.right = sacNode.right;
 			else sacNodeParent.left = sacNode.right;
+		} else {
+			if (sacNode == sacNodeParent.right) sacNodeParent.right = null;
+			else sacNodeParent.left = null;
 		}
 		size--;
 	}
@@ -345,7 +349,7 @@ public class TreeList<E extends Comparable> implements ISortedList<E> {
 	@Override
 	public String toString() {
 		Stream.Builder<String> stringStream = Stream.builder();
-
+		if (root.data == null) return "** empty tree **";
 		stringStream.add("{ ");
 		MyIter iter = new MyIter();
 		int counter = 0;

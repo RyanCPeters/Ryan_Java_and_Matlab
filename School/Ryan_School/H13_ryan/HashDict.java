@@ -90,6 +90,7 @@ public class HashDict<K, V> implements IDict<K, V> {
 		V oldVal = null;
 		if (nodePuter == null) {
 			theArray[Math.abs(key.hashCode()) % cap] = new HashEntry<>(key, value);
+			size++;
 			return oldVal;
 		}
 		if (nodePuter.key.hashCode() == key.hashCode()) {
