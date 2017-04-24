@@ -112,7 +112,7 @@ base_n_input = questdlg("Would you like to input a value for how high of an orde
 if strcmp(base_n_input, 'Yes')
 
     base_n_input = inputdlg(
-  'Please enter your desired base value, invalid input will default into a base value of 128.');
+  'Please enter your desired base value, invalid input will default into a base value of 10^6.');
   
     if size(base_n_input)(1) > 0
         user_input = str2double(base_n_input);
@@ -146,7 +146,7 @@ disp(gap_check_n)
 % 10^6
 gaps = [1, 0];
 makeNewRow = 0;
-
+winning_lossing = 1;% yay for amgiguous names, just try to figure this one out :P
 msgbox("If you would rather just evaluate the data for determining what base num values\n\
 lead to failure conditions, press ctrl+c to terminate the ongoing calculations then\n\
 re-run this script and pass the value(s) for num and/or n that you wish to use.");
@@ -156,7 +156,7 @@ for n = 1:gap_check_n
     
         fails = fails + 1;
         
-        if(gaps(end) == (n-1) || gaps(end) == 0)
+        if((gaps(end) == (n-1) || gaps(end) == 0)) && winning_lossing == 0
             gaps(end) = n;
             makeNewRow = 1;
         else
@@ -164,6 +164,7 @@ for n = 1:gap_check_n
             % check to be able to properly recognize if we are still being
             % continuous in the current series of failures.
             gaps = [gaps; n, n];
+            winning_lossing = 0;
         endif
         
         if(fails + 1 > Isize)
@@ -196,7 +197,7 @@ for n = 1:gap_check_n
             
             gaps = [gaps; n, n];
             
-        elseif(gaps(end) == (n-1) || gaps(end) == 0)
+        elseif((gaps(end) == (n-1) || gaps(end) == 0)) && winning_lossing == 1
         
             gaps(end) = n;
             
@@ -205,6 +206,7 @@ for n = 1:gap_check_n
             % check to be able to properly recognize if we are still being
             % continuous in the current series of failures.
             gaps = [gaps; n, n];
+            winning_lossing = 1;
         endif
     endif
 endfor
