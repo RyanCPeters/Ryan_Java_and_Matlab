@@ -87,23 +87,30 @@ gap_check_n = 10^6;
 
 user_input = NaN;
 
-base_num_input = questdlg('Would you like to input a value for the base number?', 'Do you wish to pick a base number?', 'Yes','No','No');
+base_num_input = questdlg('Would you like to input a value for the base number?',
+                           'Do you wish to pick a base number?', 'Yes','No','No');
 
 if strcmp(base_num_input, 'Yes')
-    base_num_input = inputdlg('Please enter your desired base value, invalid input will default into a base value of 128.');    
+    base_num_input = inputdlg("Please enter your desired base value,\ 
+                                invalid input will default into a base value of 128.");    
     if size(base_num_input)(1) > 0
         user_input = str2double(base_num_input);
     endif    
 endif
 
-if (user_input == NaN) == 0 % yeah, I'm having problem with the "not" operator
+if (user_input == NaN) == 0 % yeah, I'm having problems with the "not" operator
     test_base_num = user_input;
 endif  
 
-base_n_input = questdlg('Would you like to input a value for how high of an order n you would like to loop to?', 'Do you wish to pick a value for n?', 'Yes','No','No');  
+base_n_input = questdlg("Would you like to input a value for how high of an order n \
+                        you would like to loop to?", 'Do you wish to pick a value for n?',
+                                                     'Yes','No','No');  
 
 if strcmp(base_n_input, 'Yes')
-    base_n_input = inputdlg('Please enter your desired base value, invalid input will default into a base value of 128.');
+
+    base_n_input = inputdlg(
+  'Please enter your desired base value, invalid input will default into a base value of 128.');
+  
     if size(base_n_input)(1) > 0
         user_input = str2double(base_n_input);
     endif
