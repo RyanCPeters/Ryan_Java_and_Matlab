@@ -6,7 +6,8 @@ clear
 
 
 
-
+% for compSize, think of this variable as being the somputational size of each block 
+% of data stored in sideByside wich each pass of the outer most while loop.
 compSize = 300;
 % the next line serves to preassign a matrix of all zero values so we don't have 
 % to worry about the time costs of growing the matrix should we want to test 
