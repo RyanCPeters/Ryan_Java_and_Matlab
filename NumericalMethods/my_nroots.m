@@ -190,7 +190,7 @@ for n = 1:gap_check_n
         endif
     endif
 endfor
-msgbox("pleace note that the 'didItFail' variable having many values does not\n\
+msgbox("please note that the 'didItFail' variable having many values does not\n\
 automatically mean there were that many points where nroot did not match nthroot.\n\n\
 Only values greater than 0 indicate a failure, hence the variable name being\n\
 in the form of a question, 'didItFail? == 0 = no, > 0 = yes' ")
