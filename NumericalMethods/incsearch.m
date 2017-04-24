@@ -41,6 +41,19 @@ for i = a:h:b-h
         % current bracket to bracket array.
         br(position,:) = [i, i+h];
     elseif (br_sign == 0)
+        rootApprox = i;
+        % the rootAppros is assumed to be i, unless the following
+        % condition proves true, in which case rootApprox = i+h instead.
+        if(f(i+h) == 0)
+            rootApprox = i+h;
+        end
+        if(br(end) == rootApprox)
+            % continue passes control to the next iteration of a for or 
+            % while loop. It skips any remaining statements in the body 
+            % of the loop for the current iteration. The program continues 
+            % execution from the next iteration.
+            continue
+        end
         tmpRowCount = size(br,1);
         if(position + 1) > tmpRowCount            
             growTo = tmpRowCount*( ...
@@ -53,7 +66,7 @@ for i = a:h:b-h
         position = position +1;
         % Bracket contains a root so append 
         % current bracket to bracket array.
-        br(position,:) = [i-(h/2), i+(h/2)];
+        br(position,:) = [rootApprox-(h/2), rootApprox+(h/2)];
     end
 end
 end
