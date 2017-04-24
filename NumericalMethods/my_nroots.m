@@ -8,7 +8,7 @@ clear
 
 % for compSize, think of this variable as being the somputational size of each block 
 % of data stored in sideByside wich each pass of the outer most while loop.
-compSize = 300;
+compSize = 1200;
 % the next line serves to preassign a matrix of all zero values so we don't have 
 % to worry about the time costs of growing the matrix should we want to test 
 % significantly large intervals of n or num. 
@@ -91,16 +91,19 @@ base_num_input = questdlg('Would you like to input a value for the base number?'
                            'Do you wish to pick a base number?', 'Yes','No','No');
 
 if strcmp(base_num_input, 'Yes')
-    base_num_input = inputdlg("Please enter your desired base value,\ 
-                                invalid input will default into a base value of 128.");    
+    base_num_input = inputdlg(
+    "Please enter your desired base value, invalid input will default into a base value of 128.");    
     if size(base_num_input)(1) > 0
         user_input = str2double(base_num_input);
+        if (user_input == NaN) == 0 % yeah, I'm having problems with the "not" operator
+            test_base_num = user_input;
+        endif 
+    else
+        test_base_num = 128;
     endif    
 endif
 
-if (user_input == NaN) == 0 % yeah, I'm having problems with the "not" operator
-    test_base_num = user_input;
-endif  
+ 
 
 base_n_input = questdlg("Would you like to input a value for how high of an order n \
                         you would like to loop to?", 'Do you wish to pick a value for n?',
@@ -113,12 +116,15 @@ if strcmp(base_n_input, 'Yes')
   
     if size(base_n_input)(1) > 0
         user_input = str2double(base_n_input);
+        if (user_input == NaN) == 0 % yeah, I'm having problem with the "not" operator
+            gap_check_n = user_input;
+        endif 
+    else
+        gap_check_n = 10^6;
     endif
 endif
 
-if (user_input == NaN) == 0 % yeah, I'm having problem with the "not" operator
-    gap_check_n = user_input;
-endif  
+ 
 
 
 disp('scirpt is set to test the base number of:')
@@ -140,6 +146,10 @@ disp(gap_check_n)
 % 10^6
 gaps = [1, 0];
 makeNewRow = 0;
+
+msgbox("If you would rather just evaluate the data for determining what base num values\n\
+lead to failure conditions, press ctrl+c to terminate the ongoing calculations then\n\
+re-run this script and pass the value(s) for num and/or n that you wish to use.");
 for n = 1:gap_check_n
     
     if (abs(nroot(test_base_num,n) - nthroot(test_base_num,n)) > delta)
