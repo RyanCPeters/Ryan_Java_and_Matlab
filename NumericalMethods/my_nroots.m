@@ -150,8 +150,29 @@ winning_lossing = 1;% yay for amgiguous names, just try to figure this one out :
 msgbox("If you would rather just evaluate the data for determining what base num values\n\
 lead to failure conditions, press ctrl+c to terminate the ongoing calculations then\n\
 re-run this script and pass the value(s) for num and/or n that you wish to use.");
+my_bar = waitbar(0,"Say Hello to your new friend, waitbar ;)");
 for n = 1:gap_check_n
-    
+
+    if(n/gap_check_n == .9*gap_check_n)
+        my_bar = waitbar(.9, my_bar)
+    elseif(n/gap_check_n == .8*gap_check_n)
+       my_bar = waitbar(.8, my_bar)
+    elseif(n/gap_check_n == .7*gap_check_n)
+        my_bar = waitbar(.7, my_bar)
+    elseif(n/gap_check_n == .6*gap_check_n)
+        my_bar = waitbar(.6, my_bar)
+    elseif(n/gap_check_n == .5*gap_check_n)
+        my_bar = waitbar(.5, my_bar)
+    elseif(n/gap_check_n == .4*gap_check_n)
+        my_bar = waitbar(.4, my_bar)
+    elseif(n/gap_check_n == .3*gap_check_n)
+        my_bar = waitbar(.3, my_bar)
+    elseif(n/gap_check_n == .2*gap_check_n)
+        my_bar = waitbar(.2, my_bar)
+    elseif(n/gap_check_n == .1*gap_check_n)
+        my_bar = waitbar(.1, my_bar)
+    endif
+        
     if (abs(nroot(test_base_num,n) - nthroot(test_base_num,n)) > delta)
     
         fails = fails + 1;
@@ -210,6 +231,8 @@ for n = 1:gap_check_n
         endif
     endif
 endfor
+close(my_bar)
+
 msgbox("please note that the 'didItFail' variable having many values does not\n\
 automatically mean there were that many points where nroot did not match nthroot.\n\n\
 Only values greater than 0 indicate a failure, hence the variable name being\n\
