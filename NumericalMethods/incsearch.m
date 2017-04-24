@@ -16,20 +16,44 @@ function br = incsearch(f, a, b, n)
 h = (b - a) / n;
 
 % Initialize bracket array
-br = zeros(1,2,n);
+br = zeros(1,2);
 position = 0;
+growTo = 0; %#ok<*NASGU>
 % Perform incremental search
 for i = a:h:b-h
-  
+  br_sign = f(i) * f(i+h);
 
     % Evaluate function at endpoints, if their
     % product is nonpositive, then the bracket
     % contains a root.
-    if (f(i) * f(i+h) <= 0)
+    if (br_sign < 0)
+        tmpRowCount = size(br,1);
+        if(position + 1) > tmpRowCount            
+            growTo = tmpRowCount*( ...
+                    1*((2^31) - tmpRowCount > ( (2^31)/ 2 )) ...
+                    + (1/2)*((2^31) - tmpRowCount > ( (2^31)/ 4 ))...
+                    + (1/3)*((2^31) - tmpRowCount > ( (2^31)/ 6 ))...
+                    + (1/6)*((2^31) - tmpRowCount > ( (2^31)/ 8 ))) ;
+            br = [br, zeros(1,growTo)]; %#ok<AGROW>
+        end
         position = position +1;
         % Bracket contains a root so append 
         % current bracket to bracket array.
-        br(:,:,position) = [i i+h];
+        br(position,:) = [i, i+h];
+    elseif (br_sign == 0)
+        tmpRowCount = size(br,1);
+        if(position + 1) > tmpRowCount            
+            growTo = tmpRowCount*( ...
+                    1*((2^31) - tmpRowCount > ( (2^31)/ 2 )) ...
+                    + (1/2)*((2^31) - tmpRowCount > ( (2^31)/ 4 ))...
+                    + (1/3)*((2^31) - tmpRowCount > ( (2^31)/ 6 ))...
+                    + (1/6)*((2^31) - tmpRowCount > ( (2^31)/ 8 ))) ;
+            br = [br, zeros(1,growTo)]; %#ok<AGROW>
+        end
+        position = position +1;
+        % Bracket contains a root so append 
+        % current bracket to bracket array.
+        br(position,:) = [i-(h/2), i+(h/2)];
     end
-
+end
 end
