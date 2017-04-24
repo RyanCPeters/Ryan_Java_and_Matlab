@@ -1,6 +1,6 @@
 >> myRootFailedAt(:,[3:4,6])
 ans =
-                  number              root               row in sideByside
+                  number           order of root               row in sideByside
 
                    128                100002                   421
                    128                100003                   422
