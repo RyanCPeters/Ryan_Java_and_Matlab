@@ -1,5 +1,5 @@
-## Author: R.Peters <R.Peters@RYANS-DESKTOP>
-## Created: 2017-05-15
+%% Author: R.Peters <R.Peters@RYANS-DESKTOP>
+%% Created: 2017-05-15
 
 function  returnable = df(func_of_x, x_pos, order_of_deriv, step_size)
 % function df(func_of_x, x_pos, order_of_deriv, step_size) %%note that order_of_deriv

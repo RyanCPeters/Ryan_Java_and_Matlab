@@ -1,48 +1,1 @@
-## Copyright (C) 2017 R.Peters
-## 
-## This program is free software; you can redistribute it and/or modify it
-## under the terms of the GNU General Public License as published by
-## the Free Software Foundation; either version 3 of the License, or
-## (at your option) any later version.
-## 
-## This program is distributed in the hope that it will be useful,
-## but WITHOUT ANY WARRANTY; without even the implied warranty of
-## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-## GNU General Public License for more details.
-## 
-## You should have received a copy of the GNU General Public License
-## along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-## -*- texinfo -*- 
-## @deftypefn {Function File} {@var{retval} =} froot (@var{input1}, @var{input2})
-##
-## @seealso{}
-## @end deftypefn
-
-## Author: R.Peters <R.Peters@RYANS-DESKTOP>
-## Created: 2017-05-15
-
-function retval = froot (f,x,g)
-
-
-h = 0.31210;
-
-if(nargin > 2)
-    nargin(3)
-    if(nargin(3) > 0)
-        retval = x - f(x)/g(x)
-    end
-else
-    retval = x - (f(x)/df(f,x))
-end
-
-for pass = 1:1000
-    last = retval;
-    retval = retval - (-h*f(retval))/(f(retval-h)-f(retval))
-    if(abs(last-retval)/abs(retval))< 10^-10
-        break;
-    end
-end
-
-    
-end
+%% Author: R.Peters || Created: 2017-05-15function retval = froot (f,x,g)% function df(func_of_x, x_pos, order_of_deriv, step_size) %%note that order_of_deriv%                                                 is an optional parameter%   %   This custom function by default produces the first derivative output  %       for the user provided anonymous function "func_of_x" at the user %       provided x-position "pos_x". The third parameter is optional, and %       it provides the user with a means to request up to a 4'th%       derivative output for their given function and position.%%%   inputs:     %           func_of_x = the anonymous function for which we are seeking a derivative%%               x_pos = the specific x position for which we will calculate a derivative%%      order_of_deriv = This is an optional parameter, that can be used to select%                       what order of derivative to return, however this funciton%                       can only derive up to the 4'th order. If this parameter%                       is left blank then the function will default to the first%                       derivative of func_of_x.%%   Outputs:%               This function will return the y value derived from either the %               first derivative of the passed function, or that corresponding to%               the order of derivative as prescribed by the order_of_deriv parameter.%h = 0.31210;if(nargin > 2)    nargin(3)    if(nargin(3) > 0)        retval = x - f(x)/g(x)    endelse    retval = x - (f(x)/df(f,x))endfor pass = 1:1000    last = retval;    retval = retval - (-h*f(retval))/(f(retval-h)-f(retval))    if(abs(last-retval)/abs(retval))< 10^-10        break;    endend    end
