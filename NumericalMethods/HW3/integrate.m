@@ -8,7 +8,7 @@ function area = integrate( funct, method_type, low_bound, hi_bound,sub_intervals
 %          function(funct), a String representing what method of
 %          approximation is desired (method_type), your bounds of
 %          integration(low_bound, hi_bound), and the number of
-%          approximating rectables, trapezoids or curves you need.
+%          approximating rectangles, trapezoids or curves you need.
 %
 %     funct = the anonymouse function representing math function f(x).
 %           
@@ -72,8 +72,7 @@ switch method_type
         if(bitget(sub_intervals,1) == 0)
             % quick note: bitget(integer,n) returns the bit state of the
             % n'th bit from 1 to however many bits this number uses. Where
-            % n = 1 is the lowest value bit in the series of bits.
-            
+            % n = 1 is the lowest value bit in the series of bits.            
             % the given value was even, so lets bump it up to an odd.
             sub_intervals = sub_intervals + 1;
             
