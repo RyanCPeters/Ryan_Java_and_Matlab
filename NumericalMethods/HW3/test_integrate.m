@@ -10,20 +10,22 @@ clear
 % dozen different places where that value should be used.
 %%
 % n will be the number of sub-intervals in our func calls
-n = 100; 
+n = 1000; 
 plotlen = n;
 range = 1:plotlen;
 approximations = ones(length(n),3);
 
 % here are some bound values 
-low = 1;
-high = 2*pi;
+low = eps;
+high = 10^3;
+
 f2_low_nonzero = (low == 0)*.1;
-f4_nonborring = ((high - low)<30)*30;
+f4_nonborring = ((high - low)<5)*5;
 % implicit in this list of bounds is that constants like pi and eps 
 % are already declared in matlab, and are thus a part of this list of bounds.
 breakShit = 2 * 10^6;
 
+xlims = [-1.3 n/4];
     
 % function set 1
 f1a = @(x) x.^2;
@@ -41,9 +43,9 @@ f3b = @(x) sin(x) + 1;
 f3c = @(x) sin(x) - 1;
 
 % function set 4
-f4a = @(x) exp(x);
-f4b = @(x) exp(x) + 1;
-f4c = @(x) expm1(x);% expm1(x) is a matlab function that handles exp(x)-1 without roundoff error.
+f4a = @(x) exp(-x);
+f4b = @(x) exp(-x) + 1;
+f4c = @(x) expm1(-x);% expm1(x) is a matlab function that handles exp(x)-1 without roundoff error.
 
 % f1 func set sols
 f1a_sol = integral(f1a,low,high);
@@ -58,15 +60,17 @@ f3a_sol = integral(f3a,low,high);
 f3b_sol = integral(f3b,low,high);
 f3c_sol = integral(f3c,low,high);
 % f4 func set sols
-f4a_sol = integral(f4a,low,high+f4_nonborring);
-f4b_sol = integral(f4b,low,high+f4_nonborring);
-f4c_sol = integral(f4c,low,high+f4_nonborring);
+f4a_sol = integral(f4a,low,high+f4_nonborring)
+f4b_sol = integral(f4b,low,high+f4_nonborring)
+f4c_sol = integral(f4c,low,high+f4_nonborring)
 
 %% 
 % First up, the function approximations by left, right, mid, trap, and simpson's 
 % methods plotted on interval of:
 % 
 % low to high;(see variable assignment for low and high above)
+% 
+% 
 %%
 % these first few lines are set up for our interval and preassigning the vectors to be used later.
 maxy = 0;
@@ -154,7 +158,7 @@ plot(range,approximations(range(1):range(end),1),'ok')
 plot(range,approximations(range(1):range(end),2),'or')
 plot(range,approximations(range(1):range(end),3),'ob')
 
-xlim([-1.3 38.5])
+xlim(xlims)
 ylim([-0.03 maxy + maxy * .05])
 
 
@@ -245,9 +249,7 @@ plot(range,approximations(range(1):range(end),1),'ok')
 plot(range,approximations(range(1):range(end),2),'or')
 plot(range,approximations(range(1):range(end),3),'ob')
 
-maxy = max(max(approximations))+.05*max(max(approximations));
-
-xlim([-1.3 38.5])
+xlim(xlims)
 ylim([-0.03 maxy + maxy * .05])
 
 
@@ -338,9 +340,7 @@ plot(range,approximations(range(1):range(end),1),'ok')
 plot(range,approximations(range(1):range(end),2),'or')
 plot(range,approximations(range(1):range(end),3),'ob')
 
-maxy = max(max(approximations))+.05*max(max(approximations));
-
-xlim([-1.3 38.5])
+xlim(xlims)
 ylim([-0.03 maxy + maxy * .05])
 
 
@@ -355,13 +355,8 @@ ylim([-0.03 maxy + maxy * .05])
 sols4 = [ones(length(n),1)*f4a_sol,ones(length(n),1)*f4b_sol,ones(length(n),1)*f4c_sol];
 
 fig4 = figure('Position',[10000,10000,925,440],...
-    'Name', 'function set 4 (exp(x)); all methods; low to high; y-axis is approximation, x-axis is number of iteratons');
+    'Name', 'function set 4 (exp(-x)); all methods; low to high; y-axis is approximation, x-axis is number of iteratons');
 grid on, grid minor, hold on
-% % set 4 actual functions
-% plot(range,sols4(:,1),'k')
-% plot(range,sols4(:,2),'r')
-% plot(range,sols4(:,3),'b') 
-% now we set up for and plot with left hand endpoints method
 for i = 1:n
      approximations(i,1) = abs(integrate(f4a,'l',low,high + f4_nonborring,i) - f4a_sol)/abs(f4a_sol);
      approximations(i,2) = abs(integrate(f4b,'l',low,high + f4_nonborring,i) - f4b_sol)/abs(f4b_sol);
@@ -431,23 +426,32 @@ plot(range,approximations(range(1):range(end),1),'ok')
 plot(range,approximations(range(1):range(end),2),'or')
 plot(range,approximations(range(1):range(end),3),'ob')
 
-maxy = max(max(max(approximations)),maxy);
-
-xlim([-1.3 38.5])
+xlim(xlims)
 ylim([-0.03 maxy + maxy * .05])
 
-
-%% 
-% 
 %%
+
 box = msgbox(...
     ['for chosen interval from low = ',num2str(low),' to high = ',num2str(high),newline,...
-    'left hand endpoints = "." ', newline,...
-    'right hand endpoints = "+"',newline,...
-    'midpoint = "--"',newline,...
-    'trapezoid = ":"',newline,...
-    'simpons rule = "o"'],'This is the legend for figures 1 through 4');
+    'black data is just g(x) = f(x)',newline,...
+    'red data is g(x) = f(x) + 1',newline,...
+    'blue data is g(x) = f(x) - 1',newline,...
+    'left hand endpoints = "." not a line', newline,...
+    'right hand endpoints = "+" not a line',newline,...
+    'midpoint = "--" a dashed line',newline,...
+    'trapezoid = ":" a dotted line',newline,...
+    'simpons rule = "o" not a line'],'This is the legend for figures 1 through 4');
 
+
+disp(['for chosen interval from low = ',num2str(low),' to high = ',num2str(high),newline,...
+    'black data is just g(x) = f(x)',newline,...
+    'red data is g(x) = f(x) + 1',newline,...
+    'blue data is g(x) = f(x) - 1',newline,...
+    'left hand endpoints = "." not a line', newline,...
+    'right hand endpoints = "+" not a line',newline,...
+    'midpoint = "--" a dashed line',newline,...
+    'trapezoid = ":" a dotted line',newline,...
+    'simpons rule = "o" not a line'])
 %% 
 % Now to position each figure so it's easily visible
 

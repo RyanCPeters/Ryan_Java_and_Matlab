@@ -38,9 +38,23 @@ function area = integrate( funct, method_type, low_bound, hi_bound,sub_intervals
 %%
 % setting up initial condition variables
 
-% h will be the size of a single step.
-h = (hi_bound - low_bound)/sub_intervals;
+if(bitget(sub_intervals,1) == 0)
+    % quick note: bitget(integer,n) returns the bit state of the
+    % n'th bit from 1 to however many bits this number uses. Where
+    % n = 1 is the lowest value bit in the series of bits.            
+    % the given value was even, so lets bump it up to an odd.
+    sub_intervals = sub_intervals + 1;
 
+    % since sub_intervals has changed, we need to upadate h. 
+     h = (hi_bound - low_bound)/(sub_intervals);
+
+    % because h has changed, we need to also update the subs vector.
+    subs = low_bound : h : hi_bound ;
+else
+    
+    % h will be the size of a single step.
+    h = (hi_bound - low_bound)/sub_intervals;
+end % end of if block
 % subs will be a vector containing the bounds for each sub-interval
 subs = low_bound : h : hi_bound ;
 
@@ -69,27 +83,14 @@ switch method_type
         % Simpson's method needs there to be an even number of
         % sub-intervals, which means we need an odd number of delimiting
         % points. ie, sub_intervals needs to be an odd number.
-        if(bitget(sub_intervals,1) == 0)
-            % quick note: bitget(integer,n) returns the bit state of the
-            % n'th bit from 1 to however many bits this number uses. Where
-            % n = 1 is the lowest value bit in the series of bits.            
-            % the given value was even, so lets bump it up to an odd.
-            sub_intervals = sub_intervals + 1;
-            
-            % since sub_intervals has changed, we need to upadate h. 
-            h = (hi_bound - low_bound)/sub_intervals;
         
-            % because h has changed, we need to also update the subs vector.
-            subs = low_bound : h : hi_bound ;
-            
-        end % end of if block
         
         
          
         area = ...
             h/3 * ( funct(subs(1)) + funct(subs(end)) ...
             + 2 * sum(funct(subs(2:2:end-2))) ...
-            + 4 * sum(funct(subs(1:2:end-1))));
+            + 4 * sum(funct(subs(3:2:end-1))));
         
     otherwise
         % this is a stub value for the output. It should serve to prevent 
