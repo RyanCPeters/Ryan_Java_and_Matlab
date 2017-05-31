@@ -166,7 +166,6 @@ ylim([-0.03 maxy + maxy * .05])
 % of the function for interval from low to high that serves as a visual reference for how the custom function
 % integrate is performing.
 sols2 = [ones(length(n),1)*f2a_sol,ones(length(n),1)*f2b_sol,ones(length(n),1)*f2c_sol];
-approximations = ones(length(n),3);
 
 fig2 = figure('Position',[10000,10000,925,440],...
     'Name', 'function set 2 (log(x)); all methods; low to high; y-axis is approximation, x-axis is number of iteratons');
@@ -260,7 +259,6 @@ ylim([-0.03 maxy + maxy * .05])
 % of the function for interval from low to high that serves as a visual reference for how the custom function
 % integrate is performing.
 sols3 = [ones(length(n),1)*f3a_sol,ones(length(n),1)*f3b_sol,ones(length(n),1)*f3c_sol];
-approximations = ones(length(n),3);
 
 fig3 = figure('Position',[10000,10000,925,440],...
     'Name', 'function set 3 (sin(x)); all methods; low to high; y-axis is approximation, x-axis is number of iteratons');
@@ -355,7 +353,6 @@ ylim([-0.03 maxy + maxy * .05])
 % of the function for interval from low to high that serves as a visual reference for how the custom function
 % integrate is performing.
 sols4 = [ones(length(n),1)*f4a_sol,ones(length(n),1)*f4b_sol,ones(length(n),1)*f4c_sol];
-approximations = ones(length(n),3);
 
 fig4 = figure('Position',[10000,10000,925,440],...
     'Name', 'function set 4 (exp(x)); all methods; low to high; y-axis is approximation, x-axis is number of iteratons');
