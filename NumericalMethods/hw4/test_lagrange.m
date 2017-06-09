@@ -44,10 +44,10 @@ figF = figure('Name', 'plot of the data points from myX and myYf in black, and a
 hold on, grid, grid minor
 plot(myX,myYf,'*k', interval,myLagf(interval),':r');
 
-figG = figure('Name', 'plot of the data points from myX and myYf in black, and a dotted line from myLagg in red');
+figG = figure('Name', 'plot of the data points from myX and myYg in black, and a dotted line from myLagg in red');
 hold on, grid, grid minor
-plot(myX,myYf,'*k', interval,myLagg(interval),':r');
+plot(myX,myYg,'*k', interval,myLagg(interval),':r');
 
-figP = figure('Name', 'plot of the data points from myX and myYf in black, and a dotted line from myLagp in red');
+figP = figure('Name', 'plot of the data points from myX and myYp in black, and a dotted line from myLagp in red');
 hold on, grid, grid minor
-plot(myX,myYf,'*k', interval,myLagp(interval),':r');
+plot(myX,myYp,'*k', interval,myLagp(interval),':r');
