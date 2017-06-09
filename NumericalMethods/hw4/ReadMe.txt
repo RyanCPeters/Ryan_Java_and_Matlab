@@ -3,14 +3,14 @@ Spring 2017
 Programming Assignment 4
 Polynomial Interpolation and Cubic Splines
 
-For this assignment we will be creating two .m les, lagrange.m and cub spline.m
+For this assignment we will be creating two .m files, lagrange.m and cub spline.m
 
 
                           lagrange.m
 1.  lagrange() takes a set of n points and returns the lagrange polynomial
     that fits that set of points.
 
-2.  lagrange() accepts two column vectors as arguments. The rst argu-
+2.  lagrange() accepts two column vectors as arguments. The first argu-
     ment is the set of x-values, and the second argument is the set of
     y-values. As usual, we do not throw any error messages. The argu-
     ments are assumed to be column vectors of the same length where each
