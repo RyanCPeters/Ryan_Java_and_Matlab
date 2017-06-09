@@ -38,7 +38,7 @@ myYp = p(myX);
 % now lets set up some lagrange anon function handle names to use in plotting.
 myLagf = lagrange(myX,myYf);
 myLagg = lagrange(myX,myYg);
-myLagg = lagrange(myX,myYp);
+myLagp = lagrange(myX,myYp);
 
 figF = figure('Name', 'plot of the data points from myX and myYf in black, and a dotted line from myLagf in red');
 hold on, grid, grid minor
