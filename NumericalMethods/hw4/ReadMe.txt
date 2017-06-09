@@ -23,10 +23,10 @@ For this assignment we will be creating two .m files, lagrange.m and cub spline.
 1.  Download cub spline.m from Canvas. The code to create the second
     order coefficients has been supplied.
     
-2.  cub spline() takes a set of n points and returns a matrix of coecients
+2.  cub spline() takes a set of n points and returns a matrix of coefficients
     for the set of piecewise cubics fit to the data.
     
-3.  cub spline() accepts two arguments. The rst argument is a column
+3.  cub spline() accepts two arguments. The first argument is a column
     vector containing the x-values of the points. The second argument is a
     column vector containing the y-values of the points. It is assumed the
     vectors x and y are column vectors of the same length where none of
