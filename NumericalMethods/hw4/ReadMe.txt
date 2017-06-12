@@ -34,4 +34,4 @@ For this assignment we will be creating two .m files, lagrange.m and cub spline.
     
 4.  Create coefficient vectors for the 1st and 3rd order coefficients of the
     spline functions. Once those have been built, use them to assemble a
-    n x n-1 matrix of coefficients for the spline functions.
+    (n-1) x 4 matrix of coefficients for the spline functions.
